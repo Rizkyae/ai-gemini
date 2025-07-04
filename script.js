@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Pengaturan API ---
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; // PASTIKAN INI API KEY ANDA YANG VALID
-    const model = 'gemini-2.5-flash';
+    const model = 'gemini-1.5-flash';
     const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     // --- State Management ---
