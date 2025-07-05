@@ -320,7 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentChatId === null) {
             startNewChat();
         }
-
+// Contoh di dalam getAIResponse atau handleSend, setelah AI menerima pesan pengguna
+if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
+    return "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
+}
         const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
         addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
         addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
