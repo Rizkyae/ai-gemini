@@ -466,7 +466,15 @@ body {
         border: none;
         overflow-y: auto; /* Pastikan main-wrapper bisa di-scroll di HP */
     }
-
+.sidebar {
+       /* width: 100%; /* <-- INI YANG HARUS DIHAPUS/DIKOMENTARI */
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #eef;
+        flex-shrink: 0;
+        padding: 15px;
+    }
+    
     /* ... sisa media query Anda ... */
 
     /* Hapus atau atur kembali scrollbar-width dan display none untuk scrollbar */
