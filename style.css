@@ -456,7 +456,7 @@ body {
     }
 
     .main-wrapper {
-        flex-direction: column;
+       /*  flex-direction: column;  */ /* INI PENYEBAB MASALAH */
         width: 100vw;
         height: auto; /* Ubah ke auto agar tingginya menyesuaikan konten */
         min-height: 100vh; /* Atau setidaknya min-height 100vh jika kontennya sedikit */
