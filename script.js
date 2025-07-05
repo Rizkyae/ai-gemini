@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return "Maaf, saya tidak dapat memberikan respons yang valid."; 
         } catch (error) { 
             console.error("Error fetching AI response:", error); 
-            return "Waduh, sorry banget, bestie. Gagal nyambung nih, servernya lagi rewel."; 
+            return "Waduh, sorry banget bri,. Gagal nyambung nih, coba ganti model AI."; 
         } 
     }
     
