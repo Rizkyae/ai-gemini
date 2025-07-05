@@ -1,0 +1,503 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ece9e6, #ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+.main-wrapper {
+    display: flex;
+    width: 95vw;
+    height: 90vh;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 260px;
+    background-color: #f7f9fc;
+    border-right: 1px solid #eef;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: #555;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar li a:hover, .sidebar li a.active {
+    background-color: #e3e9f3;
+    color: #0d6efd;
+}
+
+/* --- Chat Container --- */
+.chat-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #fff;
+    border-bottom: 1px solid #eef;
+}
+
+.header-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.header-info h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.header-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #66cdaa;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #f9fafb;
+}
+
+.message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    max-width: 80%;
+}
+
+.message-row.bot {
+    align-self: flex-start;
+}
+
+.message-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.chat-message {
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.chat-message.bot {
+    background-color: #e3e9f3;
+    color: #333;
+    border-bottom-left-radius: 5px;
+}
+
+.chat-message.user {
+    background: linear-gradient(135deg, #0d6efd, #0d9afd);
+    color: white;
+    border-bottom-right-radius: 5px;
+}
+/* MODIFIKASI: Penambahan style untuk file */
+.chat-message.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chat-message.file-info i {
+    font-size: 24px;
+}
+
+
+.chat-input-area {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px; /* Disesuaikan paddingnya */
+    border-top: 1px solid #eef;
+    background-color: #fff;
+    gap: 10px; /* Menambah jarak antar elemen */
+}
+
+#user-input {
+    flex-grow: 1;
+    border: none;
+    background-color: #f1f3f5;
+    border-radius: 25px;
+    padding: 12px 20px; /* Disesuaikan paddingnya */
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#user-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #0d6efd40;
+}
+
+/* TAMBAHAN: Style untuk Tombol Upload */
+.upload-btn {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #f1f3f5;
+    color: #0d6efd;
+}
+
+#send-btn {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    width: 45px; /* Sedikit dikecilkan */
+    height: 45px;
+    border-radius: 50%;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+/* style.css */
+
+/* --- Style untuk Area Input yang Diperbarui --- */
+.chat-input-area {
+    flex-direction: column; /* Mengubah arah agar pratinjau bisa di atas */
+    align-items: stretch;
+}
+
+.input-wrapper { /* Pembungkus baru untuk input dan tombol upload */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* --- Style untuk Pratinjau File --- */
+#file-preview-container {
+    padding: 0 10px 10px 10px; /* Padding bawah untuk memberi jarak */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-preview-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.file-preview-item img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.remove-file-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Style untuk Sematan Video YouTube --- */
+.youtube-embed-wrapper {
+    position: relative;
+    /* Menjaga rasio aspek 16:9 */
+    padding-bottom: 56.25%; 
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 12px; /* Menyamakan dengan sudut bubble chat */
+    margin-top: 10px; /* Memberi jarak dari teks (jika ada) */
+    background-color: #000; /* Latar belakang hitam saat video loading */
+}
+
+.youtube-embed-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+/* --- Sidebar --- */
+.sidebar {
+    width: 260px;
+    background-color: #f7f9fc;
+    border-right: 1px solid #eef;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Style untuk tombol Chat Baru */
+#new-chat-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+#new-chat-btn:hover {
+    background-color: #0b5ed7;
+}
+
+/* Style untuk bagian pemilihan model AI */
+.model-selection {
+    margin-top: 20px; /* Jarak dari elemen di atasnya */
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.model-selection h4 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
+}
+
+#ai-model-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #333;
+    appearance: none; /* Menghilangkan style default select */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2C197.6L146.2%2C56.9L5.4%2C197.6c-7.2%2C7.2-18.9%2C7.2-26.1%2C0c-7.2-7.2-7.2-18.9%2C0-26.1L133.1%2C23c7.2-7.2%2C18.9-7.2%2C26.1%2C0l126%2C126c7.2%2C7.2%2C7.2%2C18.9%2C0%2C26.1C305.9%2C204.8%2C294.2%2C204.8%2C287%2C197.6z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#ai-model-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+}
+
+
+/* ======================================= */
+/* --- MODE RESPONSIVE UNTUK PONSEL --- */
+/* ======================================= */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    /* Reduced background gradient intensity for a softer look */
+    background: linear-gradient(135deg, #f0f2f5, #ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Hapus atau ubah ini untuk memungkinkan body di-scroll */
+    /* height: 100vh; */ /* Hapus ini agar body bisa menyesuaikan tinggi konten */
+    min-height: 100vh; /* Gunakan min-height agar setidaknya setinggi viewport */
+    margin: 0;
+    color: #333;
+    /* Hapus atau ubah ini agar body bisa di-scroll */
+    /* overflow: hidden; */ /* Ubah ini menjadi auto atau biarkan default */
+    overflow-y: auto; /* Memungkinkan scroll vertikal pada body jika kontennya panjang */
+}
+
+.main-wrapper {
+    display: flex;
+    width: 90vw;
+    height: 90vh; /* Pertahankan ini jika Anda ingin main-wrapper memiliki tinggi tetap di desktop */
+    max-width: 1400px;
+    min-width: 900px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    /* Penting: Pastikan inner scrollable elements (seperti chat-box) memiliki overflow-y: auto */
+    /* Jika Anda ingin main-wrapper bisa di-scroll jika konten dalamnya melebihi 90vh, ubah ini: */
+    /* overflow: hidden; */
+    overflow: auto; /* Memungkinkan scroll pada main-wrapper jika ada konten yang meluap */
+    border: 1px solid #eef;
+}
+
+/* Pastikan elemen yang berisi konten panjang (chat-box, sidebar ul) memiliki overflow-y: auto */
+.chat-box {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto; /* Ini sudah benar, pastikan tidak terhalang oleh parent */
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background-color: #f9fafb;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d1d1 transparent;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto; /* Ini sudah benar */
+    scrollbar-width: thin;
+    scrollbar-color: #d1d1d1 transparent;
+}
+
+/* Biarkan media query yang membuat tampilan "tidak cocok" di HP, tapi pastikan bisa di-scroll */
+@media (max-width: 768px) {
+    body {
+        /* Kembalikan ini agar HP bisa di-scroll */
+        height: auto; /* Atau hapus sama sekali */
+        min-height: 100vh; /* Agar setidaknya setinggi viewport */
+        overflow-y: auto; /* Pastikan bisa di-scroll */
+    }
+
+    .main-wrapper {
+        flex-direction: column;
+        width: 100vw;
+        height: auto; /* Ubah ke auto agar tingginya menyesuaikan konten */
+        min-height: 100vh; /* Atau setidaknya min-height 100vh jika kontennya sedikit */
+        border-radius: 0;
+        min-width: unset;
+        box-shadow: none;
+        border: none;
+        overflow-y: auto; /* Pastikan main-wrapper bisa di-scroll di HP */
+    }
+
+    /* ... sisa media query Anda ... */
+
+    /* Hapus atau atur kembali scrollbar-width dan display none untuk scrollbar */
+    /* Jika Anda ingin scrollbar tetap terlihat, jangan sembunyikan */
+    .chat-box::-webkit-scrollbar,
+    .sidebar ul::-webkit-scrollbar {
+        /* display: none; */ /* Jika ini dihidupkan, scrollbar tidak akan terlihat tapi scrolling tetap berfungsi */
+        width: 0; /* Membuat scrollbar tidak terlihat dengan lebar 0 */
+        height: 0;
+    }
+}
+
+/* Style untuk tombol Chat Baru */
+#new-chat-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+#new-chat-btn:hover {
+    background-color: #0b5ed7;
+}
+
+#send-btn:hover {
+    background-color: #0b5ed7;
+}
