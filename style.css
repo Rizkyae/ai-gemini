@@ -504,11 +504,11 @@ body {
 /* ======================================= */
 
 /* Terapkan gaya ini jika lebar layar 768px atau kurang */
-@media (max-width: 768px) {
+@media (max-width: 568px) {
 
     /* Body dibuat agar tidak ada scroll yang tidak perlu */
     body {
-        height: 100%;
+        height: 50%;
     }
 
     /* 1. Mengubah layout utama menjadi vertikal dan memenuhi layar */
