@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiModelSelect = document.getElementById('ai-model-select'); // Dapatkan elemen select
 
     // --- Pengaturan API ---
-    const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; // PASTIKAN INI API KEY GEMINI ANDA YANG VALID
+    const apiKey = 'AIzaSyCRHGWVFSMxik8rH8J7Obi6dZSmu9fn72A'; // PASTIKAN INI API KEY GEMINI ANDA YANG VALID
     let currentModel = aiModelSelect.value; // Inisialisasi model dari nilai default select
 
     // --- State Management ---
