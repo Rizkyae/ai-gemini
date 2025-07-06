@@ -320,6 +320,157 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentChatId === null) {
             startNewChat();
         }
+        // --- FUNGSI BARU UNTUK MENGHASILKAN GAMBAR VIA BACKEND VERCEL ---
+async function getImageFromBackendVercel(prompt) {
+    try {
+        // Ganti dengan URL deployment Vercel Anda + path ke fungsi serverless
+        // Contoh: Jika domain Vercel Anda "your-app.vercel.app", maka URLnya:
+        // "https://your-app.vercel.app/api/generate_image"
+        const vercelEndpoint = '/api/generate_image'; // Jika di-deploy di root proyek yang sama
+        // Atau: 'https://nama-aplikasi-anda.vercel.app/api/generate_image';
+
+        const response = await fetch(vercelEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Vercel Backend Error Response:", errorData);
+            throw new Error(`HTTP error! status: ${response.status} - ${errorData.error}`);
+        }
+
+        const data = await response.json();
+        if (data.success && data.image_data_url) {
+            return data.image_data_url; // Mengembalikan data URL gambar (Base64)
+        } else {
+            console.error("Vercel Backend tidak mengembalikan URL gambar yang valid.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching image from Vercel backend:", error);
+        return null;
+    }
+}
+
+async function handleSend() {
+    const userMessage = userInput.value.trim();
+    if (userMessage === '' && !attachedFile) return;
+
+    // ... (Logika penanganan chat ID, menyimpan pesan ke DOM dan data) ...
+
+    const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
+    addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+    addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+
+    userInput.value = '';
+    clearFilePreview();
+
+    addMessageToDOM("lagi mikir bentar...", 'bot');
+
+    let aiResponseText = null;
+
+    if (userMessage.toLowerCase().startsWith('buat gambar:')) {
+        const imagePrompt = userMessage.substring('buat gambar:'.length).trim();
+        if (imagePrompt) {
+            addMessageToDOM(`Oke, saya akan coba buatkan gambar untuk "${imagePrompt}".`, 'bot');
+            const imageUrl = await getImageFromBackendVercel(imagePrompt); // Panggil fungsi baru ini
+            if (imageUrl) {
+                addMessageToDOM(null, 'bot', 'image', imageUrl);
+                addMessageToData(null, 'bot', 'image', imageUrl);
+                aiResponseText = "Gambar Anda sudah siap! YGY, bestie! 😉";
+            } else {
+                aiResponseText = "Maaf, saya gagal membuat gambar. Coba lagi nanti atau periksa promptnya. 😥";
+            }
+        } else {
+            aiResponseText = "Mohon berikan deskripsi gambar yang ingin Anda buat, contoh: 'buat gambar: kucing hitam'.";
+        }
+    } else {
+        // --- LOGIKA LAMA UNTUK PERCAKAPAN GEMINI ---
+        const currentChat = chats.find(c => c.id === currentChatId);
+        const conversationHistoryForAPI = [];
+
+        conversationHistoryForAPI.push({
+            "role": "user",
+            "parts": [{
+                "text": `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind.`
+            }]
+        });
+
+        // Pastikan hanya pesan terbaru pengguna yang relevan untuk Gemini jika itu bukan perintah gambar
+        // Anda perlu memastikan riwayat percakapan dikirim dengan peran yang benar (user/model bergantian).
+        // Sesuaikan bagian ini agar sesuai dengan struktur `conversationHistoryForAPI` yang benar untuk Gemini.
+        // Jika Anda mengirim seluruh riwayat, pastikan peran bergantian dengan benar.
+        // Misal:
+        const MAX_HISTORY_MESSAGES = 10;
+        const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
+
+        for (const msg of messagesToSend) {
+            const contentParts = [];
+            let processedText = msg.content;
+
+            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
+            const matches = [...(msg.content || '').matchAll(youtubeRegex)];
+
+            if (matches.length > 0) {
+                for (const match of matches) {
+                    const videoId = match[1];
+                    const videoDetails = await getYouTubeVideoDetails(videoId);
+                    if (videoDetails) {
+                        processedText = (processedText || '') + `\n\n[INFO VIDEO YOUTUBE: Judul: "${videoDetails.title}", Deskripsi: "${videoDetails.description ? videoDetails.description.substring(0, Math.min(videoDetails.description.length, 100)) + '...' : 'Tidak ada deskripsi.'}"]`;
+                    }
+                }
+            }
+
+            if (processedText) {
+                contentParts.push({ "text": processedText });
+            }
+            if (msg.fileObject) {
+                contentParts.push({
+                    "inline_data": {
+                        "mime_type": msg.fileObject.mimeType,
+                        "data": msg.fileObject.base64
+                    }
+                });
+            }
+            if (contentParts.length > 0) {
+                // Pastikan alternating roles: user, model, user, model...
+                // Ini penting untuk Gemini. Jika persona prompt adalah 'user',
+                // maka pesan AI pertama harus 'model'.
+                // Jika pesan terakhir di history adalah dari 'user', maka pesan selanjutnya dari 'model'.
+                // Anda mungkin perlu logika lebih canggih untuk memastikan ini.
+                conversationHistoryForAPI.push({
+                    "role": msg.sender === 'user' ? "user" : "model",
+                    "parts": contentParts
+                });
+            }
+        }
+        // Pastikan pesan yang baru diketik pengguna masuk paling akhir dan dengan role 'user'
+        if (!userMessage.toLowerCase().startsWith('buat gambar:')) { // Pastikan tidak duplikasi jika sudah ditangani untuk gambar
+             // Jika ini pesan teks biasa, tambahkan ke riwayat untuk Gemini
+             // Jika sudah ada dalam messagesToSend, Anda mungkin perlu menyesuaikan agar tidak duplikasi.
+             // Atau pastikan messagesToSend hanya berisi history, dan userMessage ditambahkan terpisah.
+             // Untuk kesederhanaan, asumsikan userMessage adalah yang terbaru dan belum di historyToSend.
+        }
+
+        aiResponseText = await getAIResponse(conversationHistoryForAPI);
+    }
+
+
+    // Hapus pesan "lagi mikir bentar..."
+    if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message').textContent === "lagi mikir bentar...") {
+        chatBox.removeChild(chatBox.lastChild);
+    }
+
+    if (aiResponseText) {
+        addMessageToDOM(aiResponseText, 'bot');
+        addMessageToData(aiResponseText, 'bot');
+    }
+}
+        
 // Contoh di dalam getAIResponse atau handleSend, setelah AI menerima pesan pengguna
 if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
     return "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
