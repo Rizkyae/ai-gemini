@@ -509,3 +509,32 @@ body {
 #send-btn:hover {
     background-color: #0b5ed7;
 }
+/* --- Style untuk tombol Hapus Riwayat --- */
+#clear-history-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px; /* Tambahkan sedikit jarak dari tombol di atasnya */
+    background-color: #ff4d4f; /* Warna merah untuk indikasi hapus */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex; /* Menggunakan flexbox untuk ikon dan teks */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Jarak antara ikon dan teks */
+}
+
+#clear-history-btn:hover {
+    background-color: #e60000; /* Warna merah yang lebih gelap saat hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#clear-history-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
