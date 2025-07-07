@@ -430,6 +430,8 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
         console.log(`Persona AI diubah menjadi: ${currentSelectedPersona}`); // Untuk debugging
         // Anda bisa tambahkan logika lain di sini jika perlu,
         // misalnya mereset chat atau memberikan notifikasi ke pengguna.
+     });
+    
     // --- Inisialisasi Aplikasi ---
     loadChats();
     renderHistory();
