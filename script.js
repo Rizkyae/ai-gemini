@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // PENTING: Map nilai dari dropdown ke nama model Gemini API yang sebenarnya.
         // Asumsi kita akan menggunakan gemini-pro untuk kedua persona
         if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-pro'; 
+            modelToUse = 'gemini-2.5-flash'; 
         } else if (currentModel === 'normal') {
             modelToUse = 'gemini-2.5-flash'; 
         } else {
