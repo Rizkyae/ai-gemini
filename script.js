@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiKey = 'AIzaSyCRHGWVFSMxik8rH8J7Obi6dZSmu9fn72A'; // Contoh: 'AIzaSyC0dE_kEy_HeRe_FoR_ReAl_ApI'
 
     // currentModel sekarang adalah model Gemini API yang FIX, tidak berubah dari dropdown.
-    let currentModel = 'gemini-2.5-flash'; // <--- KOREKSI: Gunakan model Gemini API yang tetap
+    let currentModel = 'gemini-2.0-flash'; // <--- KOREKSI: Gunakan model Gemini API yang tetap
                                          // Anda bisa ganti ke 'gemini-1.5-pro' jika mau.
 
     // --- State Management ---
