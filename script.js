@@ -350,7 +350,15 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
     conversationHistoryForAPI.push({
         "role": "user",
         "parts": [{
-            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-1.5-flash-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
+            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-2.0-flash-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
+        }]
+    });
+        
+          // Tambahkan persona prompt yang relevan di awal percakapan
+    conversationHistoryForAPI.push({
+        "role": "user",
+        "parts": [{
+            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-2.5-pro-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
         }]
     });
         // Tambahkan prompt persona di awal percakapan
