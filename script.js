@@ -1,4 +1,3 @@
- 
 // script.js (Lengkap dengan Perbaikan Terakhir)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatBox = document.getElementById('chat-box');
     const historyList = document.getElementById('history-list');
     const newChatBtn = document.getElementById('new-chat-btn');
+    const clearHistoryBtn = document.getElementById('clear-history-btn'); // REFERENSI TOMBOL BARU
     const uploadDocBtn = document.getElementById('upload-doc-btn');
     const uploadImgBtn = document.getElementById('upload-img-btn');
     const imageInput = document.getElementById('image-input');
@@ -441,6 +441,17 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadImgBtn.addEventListener('click', () => imageInput.click());
     imageInput.addEventListener('change', handleFileSelect);
     docInput.addEventListener('change', handleFileSelect);
+
+    // Event listener untuk hapus riwayat
+    clearHistoryBtn.addEventListener('click', () => {
+        if (confirm("Yakin mau hapus semua riwayat obrolanmu? Ini bakal permanen lho!")) {
+            chats = []; // Kosongkan array chat
+            localStorage.removeItem('ai-chat-history'); // Hapus dari local storage
+            currentChatId = null; // Reset ID chat saat ini
+            startNewChat(); // Mulai chat baru yang bersih
+            console.log("Riwayat obrolan telah dihapus!");
+        }
+    });
 
     // Event listener untuk perubahan pilihan model AI
     aiModelSelect.addEventListener('change', (e) => {
