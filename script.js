@@ -348,28 +348,13 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
         // Pastikan kita tidak mencoba mengambil slice dari array yang tidak ada
         const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
 
-          // Tambahkan persona prompt yang relevan di awal percakapan
-    conversationHistoryForAPI.push({
-        "role": "user",
-        "parts": [{
-            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-2.0-flash-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
-        }]
-    });
+        // Definisikan persona prompts (Pastikan ini ada dan kunci cocok dengan index.html)
+    const personaPrompts = {
+        "gen-z": `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind.`,
+        "normal": `You are a helpful and respectful AI assistant from Indonesia. Provide clear, concise, and polite answers. Avoid using slang or excessive emojis. Always keep the previous conversation in mind.`
+    };
         
-          // Tambahkan persona prompt yang relevan di awal percakapan
-    conversationHistoryForAPI.push({
-        "role": "user",
-        "parts": [{
-            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-2.5-pro-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
-        }]
-    });
-        // Tambahkan prompt persona di awal percakapan
-        conversationHistoryForAPI.push({
-            "role": "user", // Persona prompt biasanya masuk di role "user" pertama
-            "parts": [{
-                "text": `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind.`
-            }]
-        });
+       
          // Perhatikan: Gemini API kadang membutuhkan alternating roles.
          // Jika pesan pertama adalah 'user' (persona prompt), pesan kedua harus 'model'.
          // Untuk percakapan selanjutnya, pastikan bergantian.
