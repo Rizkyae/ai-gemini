@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Pengaturan API ---
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; // PASTIKAN INI API KEY GEMINI ANDA YANG VALID
-    let currentModel = aiModelSelect.value; // Inisialisasi model dari nilai default select
+    let currentModel = 'gemini-2.5-flash'; // Inisialisasi model dari nilai default select
 
     // --- State Management ---
     let chats = [];
@@ -430,12 +430,6 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
         console.log(`Persona AI diubah menjadi: ${currentSelectedPersona}`); // Untuk debugging
         // Anda bisa tambahkan logika lain di sini jika perlu,
         // misalnya mereset chat atau memberikan notifikasi ke pengguna.
-    
-
-      
-        // Anda mungkin ingin memberi tahu pengguna bahwa model telah diubah
-
-
     // --- Inisialisasi Aplikasi ---
     loadChats();
     renderHistory();
