@@ -292,9 +292,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentModel === 'gen-z') {
             modelToUse = 'gemini-pro'; 
         } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-pro'; 
+            modelToUse = 'gemini-2.5-flash'; 
         } else {
-            modelToUse = 'gemini-pro'; // Default fallback jika ada nilai currentModel lain
+            modelToUse = 'gemini-2.5-flash'; // Default fallback jika ada nilai currentModel lain
         }
 
         try {
