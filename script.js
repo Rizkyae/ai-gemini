@@ -1,3 +1,4 @@
+ 
 // script.js (Lengkap dengan Perbaikan Terakhir)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiModelSelect = document.getElementById('ai-model-select'); // Dapatkan elemen select
 
     // --- Pengaturan API ---
-    // Pastikan ini API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
+    // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
     let currentModel = aiModelSelect.value; // Inisialisasi model dari nilai default select
 
@@ -288,13 +289,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getAIResponse(conversationParts) { 
         let modelToUse;
         // PENTING: Map nilai dari dropdown ke nama model Gemini API yang sebenarnya.
-        // Asumsi kita akan menggunakan gemini-pro untuk kedua persona
         if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-2.0-flash'; 
+            modelToUse = 'gemini-2.5-flash'; // Untuk persona Gen Z, gunakan model gemini-pro
+            console.log("Menggunakan model untuk Gen Z:", modelToUse);
         } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-2.5-flash'; 
+            modelToUse = 'gemini-1.5-flash'; // Untuk persona Normal, gunakan model gemini-1.5-flash
+            console.log("Menggunakan model untuk Normal AI:", modelToUse);
         } else {
             modelToUse = 'gemini-pro'; // Default fallback jika ada nilai currentModel lain
+            console.log("Menggunakan model default:", modelToUse);
         }
 
         try {
@@ -350,11 +353,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Logika untuk Persona Prompt berdasarkan currentModel ---
         let personaPrompt = '';
+        console.log("Current Model Selected:", currentModel); // Tambahkan log ini
         if (currentModel === 'gen-z') {
             personaPrompt = `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind.`;
         } else if (currentModel === 'normal') {
-            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Always keep the previous conversation in mind.`;
+            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Be polite, formal where appropriate, and do not use slang or emojis unless explicitly asked. Always keep the previous conversation in mind.`; // Prompt Normal yang lebih kuat
         }
+        console.log("Persona Prompt Generated:", personaPrompt); // Tambahkan log ini
+        
         // Tambahkan persona prompt sebagai giliran 'user' pertama
         if (personaPrompt) {
             conversationHistoryForAPI.push({
@@ -415,11 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Cek lagi untuk kasus "edit foto" atau "ganti background" setelah mendapatkan respons AI
-        // Ini adalah tempat yang lebih baik untuk respons khusus ini, agar AI bisa memproses dulu.
         if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
              addMessageToDOM("Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏", 'bot');
              addMessageToData("Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏", 'bot');
-             return; // Stop here if the custom response is given
+             return; 
         }
 
         addMessageToDOM(aiMessage, 'bot');
@@ -442,6 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentModel = e.target.value; // Update model yang dipilih
         console.log(`Model AI diubah menjadi: ${currentModel}`);
         // Anda mungkin ingin memberi tahu pengguna bahwa model telah diubah
+        // PENTING: Untuk memastikan persona baru diterapkan dengan baik,
+        // disarankan untuk memulai chat baru setelah mengganti model.
     });
 
     // --- Inisialisasi Aplikasi ---
