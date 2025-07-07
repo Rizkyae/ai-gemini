@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiModelSelect = document.getElementById('ai-model-select'); // Dapatkan elemen select
 
     // --- Pengaturan API ---
-    const apiKey = 'AIzaSyCRHGWVFSMxik8rH8J7Obi6dZSmu9fn72A'; // PASTIKAN INI API KEY GEMINI ANDA YANG VALID
+    // Pastikan ini API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
+    const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
     let currentModel = aiModelSelect.value; // Inisialisasi model dari nilai default select
 
     // --- State Management ---
@@ -183,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNGSI BARU DAN FUNGSI YANG DIPERBARUI ---
 
     // --- PENGATURAN API KEY YOUTUBE ---
-    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; // <--- GANTI INI DENGAN API KEY YOUTUBE ANDA YANG VALID
+    // GANTI INI DENGAN API KEY YOUTUBE ANDA YANG VALID
+    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; 
 
     // Fungsi untuk mendapatkan detail video dari YouTube Data API
     async function getYouTubeVideoDetails(videoId) {
@@ -283,13 +285,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fungsi getAIResponse diperbarui untuk menggunakan currentModel dan riwayat percakapan
-    // Catatan: Nama model yang sebenarnya untuk Gemini API mungkin adalah "gemini-pro" atau "gemini-pro-vision"
-    // `currentModel` di sini hanya digunakan untuk log di konsol atau logika di handleSend
-    async function getAIResponse(conversationParts) { // Menerima seluruh riwayat sebagai conversationParts
-        let modelToUse = "gemini-pro"; // Default atau fallback model
-        // Anda bisa tambahkan logika di sini jika Anda ingin memetakan 'gen-z' atau 'normal' ke model API yang berbeda
-        // Misalnya, jika Anda memiliki model khusus yang di-fine-tune, Anda bisa menunjuknya di sini.
-        // Untuk tujuan persona, kita akan mengandalkan prompt engineering di handleSend.
+    async function getAIResponse(conversationParts) { 
+        let modelToUse;
+        // PENTING: Map nilai dari dropdown ke nama model Gemini API yang sebenarnya.
+        if (currentModel === 'gen-z') {
+            modelToUse = 'gemini-pro'; // Atau 'gemini-1.5-pro' jika tersedia dan Anda ingin menggunakan yang lebih canggih
+        } else if (currentModel === 'normal') {
+            modelToUse = 'gemini-pro'; // Atau 'gemini-1.5-flash' jika Anda ingin model yang lebih cepat tapi mungkin kurang canggih
+        } else {
+            modelToUse = 'gemini-pro'; // Default fallback
+        }
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey}`, {
@@ -298,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    "contents": conversationParts // Kirim seluruh riwayat di sini
+                    "contents": conversationParts 
                 })
             });
             if (!response.ok) {
@@ -327,18 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentChatId === null) {
             startNewChat();
         }
-
-        // Contoh di dalam getAIResponse atau handleSend, setelah AI menerima pesan pengguna
-        // Pindahkan ini ke bagian di mana AI merespons, bukan di awal pengiriman
-        // if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
-        //     // Ini akan menjadi balasan dari AI, jadi sebaiknya ditambahkan ke riwayat sebagai pesan bot
-        //     addMessageToDOM("Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏", 'bot');
-        //     addMessageToData("Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏", 'bot');
-        //     userInput.value = '';
-        //     clearFilePreview();
-        //     return; // Hentikan proses selanjutnya jika ini adalah respons otomatis
-        // }
-
+        
         const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
         addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
         addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
@@ -346,6 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
         clearFilePreview();
 
+        // Tambahkan pesan "lagi mikir bentar..."
         addMessageToDOM("lagi mikir bentar...", 'bot');
 
         // --- Persiapan Riwayat Percakapan untuk API ---
@@ -359,30 +354,34 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentModel === 'normal') {
             personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Always keep the previous conversation in mind.`;
         }
-
+        // Tambahkan persona prompt sebagai giliran 'user' pertama
         if (personaPrompt) {
             conversationHistoryForAPI.push({
                 "role": "user",
                 "parts": [{ "text": personaPrompt }]
             });
+             // Untuk menjaga pergantian role, kita perlu menambahkan respons 'model' dummy jika persona prompt adalah satu-satunya pesan di awal.
+             // Namun, untuk kasus ini, kita akan biarkan API Gemini menangani role alternating secara otomatis dari riwayat chat.
+             // Jika ada masalah dengan `400 Bad Request` terkait role, ini adalah tempat yang perlu disesuaikan.
         }
-        // --- Akhir Logika Persona Prompt ---
 
         // Iterasi melalui pesan-pesan yang ada di currentChat
         const MAX_HISTORY_MESSAGES = 10; // Contoh: kirim 10 pesan terakhir
+        // Pastikan kita tidak mencoba mengambil slice dari array yang tidak ada
         const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
 
-        for (const msg of messagesToSend) {
+        for (const msg of messagesToSend) { // Gunakan for...of untuk async/await
             const contentParts = [];
-            let processedText = msg.content;
+            let processedText = msg.content; 
 
+            // Cek jika pesan mengandung link YouTube
             const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
             const matches = [...(msg.content || '').matchAll(youtubeRegex)]; 
 
             if (matches.length > 0) {
                 for (const match of matches) {
                     const videoId = match[1];
-                    const videoDetails = await getYouTubeVideoDetails(videoId);
+                    const videoDetails = await getYouTubeVideoDetails(videoId); 
                     if (videoDetails) {
                         processedText = (processedText || '') + `\n\n[INFO VIDEO YOUTUBE: Judul: "${videoDetails.title}", Deskripsi: "${videoDetails.description ? videoDetails.description.substring(0, Math.min(videoDetails.description.length, 100)) + '...' : 'Tidak ada deskripsi.'}"]`;
                     }
@@ -400,16 +399,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
+            
+            // Hanya tambahkan jika ada konten atau file
             if (contentParts.length > 0) {
-                // Ensure alternating roles for API if a persona prompt was sent
-                const lastRole = conversationHistoryForAPI.length > 0 ? conversationHistoryForAPI[conversationHistoryForAPI.length - 1].role : null;
-                let currentRole = msg.sender === 'user' ? "user" : "model";
-
-                // If the last message was the persona prompt (user), and the current is also user,
-                // we might need to adjust or ensure the history is correctly structured for alternating turns.
-                // For simplicity, we'll just push based on msg.sender, assuming the persona prompt is the first "user" turn.
                 conversationHistoryForAPI.push({
-                    "role": currentRole,
+                    "role": msg.sender === 'user' ? "user" : "model", // Sesuaikan role
                     "parts": contentParts
                 });
             }
@@ -419,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const aiMessage = await getAIResponse(conversationHistoryForAPI);
 
         // Hapus pesan "lagi mikir bentar..."
-        if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message').textContent === "lagi mikir bentar...") {
+        if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message') && chatBox.lastChild.querySelector('.chat-message').textContent === "lagi mikir bentar...") {
             chatBox.removeChild(chatBox.lastChild);
         }
         
