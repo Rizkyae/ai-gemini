@@ -320,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentChatId === null) {
             startNewChat();
         }
+    
 // Contoh di dalam getAIResponse atau handleSend, setelah AI menerima pesan pengguna
 if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
     return "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
@@ -345,6 +346,13 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
         // Pastikan kita tidak mencoba mengambil slice dari array yang tidak ada
         const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
 
+          // Tambahkan persona prompt yang relevan di awal percakapan
+    conversationHistoryForAPI.push({
+        "role": "user",
+        "parts": [{
+            "text": personaPrompts[currentSelectedPersona] || personaPrompts["gemini-1.5-flash-normal"] // Gunakan persona yang dipilih, fallback ke normal jika tidak ditemukan
+        }]
+    });
         // Tambahkan prompt persona di awal percakapan
         conversationHistoryForAPI.push({
             "role": "user", // Persona prompt biasanya masuk di role "user" pertama
