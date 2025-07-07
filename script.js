@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let chats = [];
     let currentChatId = null;
     let attachedFile = null;
-
+    let currentSelectedPersona = aiModelSelect.value;
     // --- Fungsi Pengelola Riwayat ---
     function loadChats() {
         const savedChats = localStorage.getItem('ai-chat-history');
@@ -315,7 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleSend() {
         const userMessage = userInput.value.trim();
         if (userMessage === '' && !attachedFile) return;
-
+const currentChat = chats.find(c => c.id === currentChatId);
+    const conversationHistoryForAPI = [];
+        
         // Pastikan ada currentChatId, jika tidak, buat yang baru
         if (currentChatId === null) {
             startNewChat();
@@ -438,8 +440,14 @@ if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase()
 
     // Event listener untuk perubahan pilihan model AI
     aiModelSelect.addEventListener('change', (e) => {
-        currentModel = e.target.value; // Update model yang dipilih
-        console.log(`Model AI diubah menjadi: ${currentModel}`);
+       currentSelectedPersona = e.target.value; // <--- UBAH BARIS INI
+                                                 // Sekarang, nilai yang dipilih disimpan ke currentSelectedPersona
+        console.log(`Persona AI diubah menjadi: ${currentSelectedPersona}`); // Untuk debugging
+        // Anda bisa tambahkan logika lain di sini jika perlu,
+        // misalnya mereset chat atau memberikan notifikasi ke pengguna.
+    });
+
+      
         // Anda mungkin ingin memberi tahu pengguna bahwa model telah diubah
     });
 
