@@ -288,12 +288,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getAIResponse(conversationParts) { 
         let modelToUse;
         // PENTING: Map nilai dari dropdown ke nama model Gemini API yang sebenarnya.
+        // Asumsi kita akan menggunakan gemini-pro untuk kedua persona
         if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-pro'; // Atau 'gemini-1.5-pro' jika tersedia dan Anda ingin menggunakan yang lebih canggih
+            modelToUse = 'gemini-pro'; 
         } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-pro'; // Atau 'gemini-1.5-flash' jika Anda ingin model yang lebih cepat tapi mungkin kurang canggih
+            modelToUse = 'gemini-pro'; 
         } else {
-            modelToUse = 'gemini-pro'; // Default fallback
+            modelToUse = 'gemini-pro'; // Default fallback jika ada nilai currentModel lain
         }
 
         try {
@@ -360,14 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 "role": "user",
                 "parts": [{ "text": personaPrompt }]
             });
-             // Untuk menjaga pergantian role, kita perlu menambahkan respons 'model' dummy jika persona prompt adalah satu-satunya pesan di awal.
-             // Namun, untuk kasus ini, kita akan biarkan API Gemini menangani role alternating secara otomatis dari riwayat chat.
-             // Jika ada masalah dengan `400 Bad Request` terkait role, ini adalah tempat yang perlu disesuaikan.
         }
 
         // Iterasi melalui pesan-pesan yang ada di currentChat
         const MAX_HISTORY_MESSAGES = 10; // Contoh: kirim 10 pesan terakhir
-        // Pastikan kita tidak mencoba mengambil slice dari array yang tidak ada
         const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
 
         for (const msg of messagesToSend) { // Gunakan for...of untuk async/await
