@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modelToUse = 'gemini-1.5-flash'; // Menggunakan flash untuk kecepatan
             console.log("Menggunakan model untuk Gen Z:", modelToUse);
         } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-1.5-flash';
+            modelToUse = 'gemini-2.5-flash';
             console.log("Menggunakan model untuk Normal AI:", modelToUse);
         } else {
             modelToUse = 'gemini-pro';
