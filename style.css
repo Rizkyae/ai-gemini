@@ -527,6 +527,53 @@ body {
     justify-content: center;
     gap: 8px; /* Jarak antara ikon dan teks */
 }
+/* BARU: Gaya untuk gambar di dalam pesan chat */
+.chat-message img {
+    max-width: 100%; /* Memastikan gambar tidak meluber dari parent-nya (.chat-message) */
+    height: auto;    /* Menjaga rasio aspek */
+    border-radius: 10px; /* Opsional: Menambahkan sudut membulat pada gambar */
+    display: block;  /* Mencegah spasi ekstra di bawah gambar */
+    margin-top: 5px; /* Menambahkan sedikit jarak jika ada teks di atas gambar dalam gelembung yang sama */
+}
+
+/* BARU: Gaya khusus untuk pesan yang sebagian besar berisi gambar */
+.chat-message.image-only {
+    padding: 5px; /* Mengurangi padding untuk pesan yang fokus pada gambar */
+    background-color: transparent; /* Menghapus warna latar belakang jika Anda ingin gambar menjadi "gelembung" itu sendiri */
+    border: none; /* Menghapus border untuk gelembung khusus gambar */
+    box-shadow: none; /* Menghapus bayangan jika ada dari .chat-message */
+}
+
+/* BARU: Wadah untuk gambar di dalam gelembung chat agar terpusat */
+.chat-message .image-wrapper {
+    display: flex;
+    justify-content: center; /* Memusatkan gambar secara horizontal */
+    align-items: center; /* Memusatkan gambar secara vertikal */
+    overflow: hidden; /* Menyembunyikan luapan jika gambar sedikit lebih besar */
+    border-radius: 10px; /* Menyamakan border-radius gambar */
+}
+
+/* Memastikan pratinjau file untuk dokumen juga terlihat bagus */
+.sent-file-preview-doc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.05); /* Latar belakang terang */
+    border-radius: 8px;
+    margin-top: 5px; /* Jarak dari teks */
+    word-break: break-all; /* Memastikan nama file yang panjang terbungkus */
+}
+
+.sent-file-preview-doc i {
+    font-size: 20px;
+    color: #555;
+}
+
+.sent-file-preview-doc span {
+    font-size: 14px;
+    color: #333;
+}
 
 #clear-history-btn:hover {
     background-color: #e60000; /* Warna merah yang lebih gelap saat hover */
