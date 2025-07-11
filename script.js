@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filePreviewContainer = document.getElementById('file-preview-container');
     const aiModelSelect = document.getElementById('ai-model-select');
 
+
     // --- Pengaturan API ---
     // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
