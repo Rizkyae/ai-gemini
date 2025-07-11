@@ -1,4 +1,4 @@
-// script.js (Lengkap dengan Perbaikan Terakhir + Fitur AI Menampilkan Gambar)
+// script.js (Diadaptasi untuk tampilan CosmoChat)
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -6,34 +6,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
-    const historyList = document.getElementById('history-list');
-    const newChatBtn = document.getElementById('new-chat-btn');
-    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    const typingIndicator = document.getElementById('typing-indicator'); // Tambahkan ini
+    
+    // Elemen sidebar lama (dikomentari jika sidebar dihapus dari HTML)
+    // const historyList = document.getElementById('history-list');
+    // const newChatBtn = document.getElementById('new-chat-btn');
+    // const clearHistoryBtn = document.getElementById('clear-history-btn');
+    // const aiModelSelect = document.getElementById('ai-model-select');
+
     const uploadDocBtn = document.getElementById('upload-doc-btn');
     const uploadImgBtn = document.getElementById('upload-img-btn');
     const imageInput = document.getElementById('image-input');
     const docInput = document.getElementById('doc-input');
     const filePreviewContainer = document.getElementById('file-preview-container');
-    const aiModelSelect = document.getElementById('ai-model-select');
 
     // --- Pengaturan API ---
     // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
-    let currentModel = aiModelSelect.value; 
+    // let currentModel = aiModelSelect ? aiModelSelect.value : 'gemini-pro'; // Sesuaikan jika aiModelSelect tidak ada
+    let currentModel = 'gemini-pro'; // Default ke gemini-pro jika tidak ada pilihan model
 
     // --- State Management ---
     let chats = [];
     let currentChatId = null;
-    let attachedFile = null;
+    let attachedFile = null; // Menyimpan file yang akan dikirim
+
+    // --- Fungsi Pengelola Waktu ---
+    function getCurrentTime() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+    }
 
     // --- Fungsi Pengelola Riwayat ---
     function loadChats() {
         const savedChats = localStorage.getItem('ai-chat-history');
         if (savedChats) {
             chats = JSON.parse(savedChats);
-        }
-        if (chats.length > 0) {
-            currentChatId = chats[0].id;
+            if (chats.length > 0) {
+                currentChatId = chats[0].id; // Load the first chat by default
+                renderChat(currentChatId);
+                // renderHistory(); // Akan error jika historyList tidak ada
+            } else {
+                startNewChat();
+            }
         } else {
             startNewChat();
         }
@@ -43,413 +63,397 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('ai-chat-history', JSON.stringify(chats));
     }
 
-    function renderHistory() {
-        historyList.innerHTML = '';
-        if (chats.length === 0) {
-            historyList.innerHTML = '<li><a href="#" class="disabled">Tidak ada riwayat</a></li>';
-        } else {
-            chats.forEach(chat => {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = '#';
-                a.innerHTML = `<i class="far fa-comment-dots"></i> ${chat.title}`;
-                a.dataset.chatId = chat.id;
-                if (chat.id === currentChatId) {
-                    a.classList.add('active');
-                }
-                a.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentChatId = chat.id;
-                    renderChatBox();
-                    renderHistory();
-                });
-                li.appendChild(a);
-                historyList.appendChild(li);
+    function renderChat(chatId) {
+        chatBox.innerHTML = ''; // Kosongkan chatbox
+        const chat = chats.find(c => c.id === chatId);
+        if (chat) {
+            chat.messages.forEach(msg => {
+                addMessageToDOM(msg.text, msg.sender, msg.type, msg.fileData, msg.fileName, msg.imageURL, false);
             });
         }
-    }
-
-    function renderChatBox() {
-        chatBox.innerHTML = '';
-        const currentChat = chats.find(c => c.id === currentChatId);
-        if (!currentChat || currentChat.messages.length === 0) {
-             const initialMessageRow = document.createElement('div');
-             initialMessageRow.classList.add('message-row', 'bot');
-
-             const initialAvatar = document.createElement('img');
-             initialAvatar.src = 'anim.gif';
-             initialAvatar.alt = 'AI Avatar';
-             initialAvatar.classList.add('avatar');
-             initialMessageRow.appendChild(initialAvatar);
-
-             const initialChatMessage = document.createElement('div');
-             initialChatMessage.classList.add('chat-message', 'bot');
-             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>';
-             initialMessageRow.appendChild(initialChatMessage);
-             chatBox.appendChild(initialMessageRow);
-        }
-
-        if (currentChat && currentChat.messages) {
-            currentChat.messages.forEach(msg => {
-                addMessageToDOM(msg.content, msg.sender, msg.type, msg.filePreview, msg.fileObject, msg.aiImageURL); // Tambahkan aiImageURL
-            });
-        }
-    }
-
-    function startNewChat() {
-        const newChatId = `chat-${Date.now()}`;
-        const newChat = {
-            id: newChatId,
-            title: 'Chat Baru',
-            messages: []
-        };
-        chats.unshift(newChat);
-        currentChatId = newChatId;
-        userInput.value = '';
-        clearFilePreview();
-        renderChatBox();
-        renderHistory();
-        saveChats();
-    }
-
-    // Perbarui fungsi untuk menerima aiImageURL
-    function addMessageToData(content, sender, type = 'text', filePreview = null, fileObject = null, aiImageURL = null) {
-        let currentChat = chats.find(c => c.id === currentChatId);
-        if (!currentChat) {
-            startNewChat();
-            currentChat = chats.find(c => c.id === currentChatId);
-        }
-        currentChat.messages.push({
-            sender,
-            content,
-            type,
-            filePreview,
-            fileObject,
-            aiImageURL // Simpan URL gambar AI jika ada
-        });
-
-        if (currentChat.messages.length === 1) {
-            currentChat.title = content ? (content.substring(0, 30) + (content.length > 30 ? '...' : '')) : (fileObject ? `File: ${fileObject.name.substring(0, 20)}...` : 'Chat Baru');
-            renderHistory();
-        }
-        saveChats();
-    }
-
-    function clearFilePreview() {
-        attachedFile = null;
-        filePreviewContainer.innerHTML = '';
-    }
-
-    function renderFilePreview(fileData) {
-        clearFilePreview();
-        attachedFile = fileData;
-        const previewWrapper = document.createElement('div');
-        previewWrapper.className = 'file-preview-item';
-        if (fileData.mimeType.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.src = `data:${fileData.mimeType};base64,${fileData.base64}`;
-            previewWrapper.appendChild(img);
-        } else {
-            previewWrapper.innerHTML = `<i class="fas fa-file-alt" style="font-size: 40px; color: #888;"></i><p style="margin:0 10px;">${fileData.name}</p>`;
-        }
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-file-btn';
-        removeBtn.innerHTML = '×';
-        removeBtn.onclick = clearFilePreview;
-        previewWrapper.appendChild(removeBtn);
-        filePreviewContainer.appendChild(previewWrapper);
-    }
-
-    function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            alert("Ukuran file terlalu besar! Maksimal 5MB.");
-            return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64String = reader.result.split(',')[1];
-            renderFilePreview({
-                name: file.name,
-                mimeType: file.type,
-                base64: base64String
-            });
-        };
-        reader.readAsDataURL(file);
-        event.target.value = '';
-    }
-
-    // --- FUNGSI BARU DAN FUNGSI YANG DIPERBARUI ---
-
-    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; 
-
-    async function getYouTubeVideoDetails(videoId) {
-        try {
-            const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${youtubeApiKey}`);
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("YouTube API Error Response:", errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.items && data.items.length > 0) {
-                const snippet = data.items[0].snippet;
-                return {
-                    title: snippet.title,
-                    description: snippet.description,
-                    tags: snippet.tags
-                };
-            }
-            return null;
-        } catch (error) {
-            console.error("Error fetching YouTube video details:", error);
-            return null;
-        }
-    }
-
-    function embedYouTubeLinks(text) {
-        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
-        return text.replace(youtubeRegex, (match, videoId) => {
-            return `<div class="youtube-embed-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
-        });
-    }
-
-    /**
-     * FUNGSI DIPERBAIKI: `addMessageToDOM` sekarang sudah benar dan dapat menampilkan gambar AI.
-     */
-    function addMessageToDOM(message, sender, type = 'text', filePreviewUrl = null, fileObject = null, aiImageURL = null) {
-        const messageRow = document.createElement('div');
-        messageRow.classList.add('message-row', sender);
-
-        const avatar = document.createElement('img');
-        if (sender === 'bot') {
-            avatar.src = 'anim.gif';
-            avatar.alt = 'AI Avatar';
-        } else {
-            avatar.src = 'user.gif';
-            avatar.alt = 'User Avatar';
-        }
-        avatar.classList.add('avatar');
-        messageRow.appendChild(avatar);
-
-        const chatMessage = document.createElement('div');
-        chatMessage.classList.add('chat-message', sender);
-
-        let contentHTML = '';
-
-        // Logika untuk menampilkan pratinjau file yang dikirim oleh USER
-        if (filePreviewUrl && sender === 'user') { // Hanya tampilkan file preview untuk pengirim user
-            let isImage = false;
-            if (fileObject) {
-                isImage = fileObject.mimeType.startsWith('image/');
-            } else {
-                isImage = filePreviewUrl.startsWith('data:image/');
-            }
-
-            if (isImage) {
-                contentHTML += `<div class="sent-file-preview"><img src="${filePreviewUrl}" alt="Pratinjau Gambar"></div>`;
-            } else {
-                const fileName = fileObject ? fileObject.name : 'Dokumen';
-                contentHTML += `<div class="sent-file-preview-doc"><i class="fas fa-file-alt"></i><span>${fileName}</span></div>`;
-            }
-        }
-
-        // Logika untuk menampilkan gambar yang dikirim oleh AI
-        if (aiImageURL && sender === 'bot') {
-            contentHTML += `<div class="ai-image-response"><img src="${aiImageURL}" alt="Gambar dari AI"></div>`;
-        }
-
-        // Menambahkan teks pesan (pastikan ini di bawah gambar jika ada)
-        if (message) {
-            const processedMessage = embedYouTubeLinks(message);
-            contentHTML += marked.parse(processedMessage);
-        }
-
-        chatMessage.innerHTML = contentHTML;
-
-        messageRow.appendChild(chatMessage);
-
-        chatBox.appendChild(messageRow);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    async function getAIResponse(conversationParts) { 
-        let modelToUse;
-        if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-1.5-flash'; // Menggunakan flash untuk kecepatan
-            console.log("Menggunakan model untuk Gen Z:", modelToUse);
-        } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-2.5-flash';
-            console.log("Menggunakan model untuk Normal AI:", modelToUse);
-        } else {
-            modelToUse = 'gemini-pro';
-            console.log("Menggunakan model default:", modelToUse);
+    /*
+    // renderHistory() akan diaktifkan jika elemen sidebar diaktifkan kembali
+    function renderHistory() {
+        historyList.innerHTML = '';
+        if (chats.length === 0) {
+            historyList.innerHTML = '<li class="text-gray-500 text-sm">Belum ada riwayat chat.</li>';
+            return;
         }
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "contents": conversationParts 
-                })
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("API Error Response:", errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.candidates && data.candidates.length > 0) {
-                if (data.candidates[0].content.parts[0].text) {
-                    return data.candidates[0].content.parts[0].text.trim();
+        chats.forEach(chat => {
+            const li = document.createElement('li');
+            li.className = `history-item ${chat.id === currentChatId ? 'active' : ''}`;
+            li.dataset.chatId = chat.id;
+            li.innerHTML = `
+                <i class="fas fa-comment"></i>
+                <span class="chat-title">${chat.title}</span>
+                <button class="delete-chat-btn" data-chat-id="${chat.id}"><i class="fas fa-times"></i></button>
+            `;
+            li.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('delete-chat-btn') && !e.target.closest('.delete-chat-btn')) {
+                    currentChatId = chat.id;
+                    renderChat(currentChatId);
+                    renderHistory(); // Update active state
                 }
-            }
-            return "Maaf, saya tidak dapat memberikan respons yang valid.";
-        } catch (error) {
-            console.error("Error fetching AI response:", error);
-            return "Waduh, sorry banget bro. Gagal nyambung nih, coba ganti model AI";
+            });
+            historyList.appendChild(li);
+        });
+
+        // Add event listeners for delete buttons
+        document.querySelectorAll('.delete-chat-btn').forEach(button => {
+            button.onclick = (e) => {
+                e.stopPropagation(); // Prevent activating chat when deleting
+                const chatIdToDelete = e.target.closest('.delete-chat-btn').dataset.chatId;
+                if (confirm('Yakin ingin menghapus chat ini?')) {
+                    chats = chats.filter(c => c.id !== chatIdToDelete);
+                    saveChats();
+                    if (currentChatId === chatIdToDelete) {
+                        currentChatId = null;
+                        startNewChat();
+                    } else {
+                        renderHistory();
+                    }
+                }
+            };
+        });
+    }
+    */
+
+    function addMessageToData(text, sender, type, fileData = null, fileName = null, imageURL = null) {
+        if (!currentChatId) {
+            startNewChat();
+        }
+        const chat = chats.find(c => c.id === currentChatId);
+        if (chat) {
+            chat.messages.push({
+                text: text,
+                sender: sender,
+                timestamp: getCurrentTime(),
+                type: type,
+                fileData: fileData,
+                fileName: fileName,
+                imageURL: imageURL
+            });
+            saveChats();
         }
     }
 
+    // --- FUNGSI UTAMA UNTUK MENAMBAHKAN PESAN KE DOM (DIADAPTASI UNTUK COSMOCHAT STYLE) ---
+    function addMessageToDOM(text, sender, type = 'text', fileData = null, fileName = null, imageURL = null, isNew = true) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message-enter flex ${sender === 'user' ? 'justify-end' : ''} space-x-3`;
+
+        let avatarHtml = '';
+        let messageContentHtml = '';
+        let bubbleClass = '';
+        let timestampClass = '';
+
+        if (sender === 'user') {
+            avatarHtml = `
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                        <i class="fas fa-user-astronaut text-white"></i>
+                    </div>
+                </div>`;
+            bubbleClass = 'bg-indigo-600/70 backdrop-blur-sm p-4 rounded-2xl max-w-[80%] border border-indigo-700 rounded-tr-none';
+            timestampClass = 'text-xs text-indigo-200 mt-2 text-right';
+        } else { // bot
+            avatarHtml = `
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
+                        <img src="anim.gif" alt="AI Avatar" class="w-7 h-7 rounded-full">
+                    </div>
+                </div>`;
+            bubbleClass = 'bg-gray-800/70 backdrop-blur-sm p-4 rounded-2xl max-w-[80%] border border-gray-700 chat-bubble rounded-tl-none';
+            timestampClass = 'text-xs text-gray-400 mt-2';
+        }
+
+        let contentHtml = '';
+        if (type === 'text') {
+            // Menggunakan marked untuk merender markdown
+            contentHtml = marked.parse(text || '');
+        } else if (type === 'image' && imageURL) {
+            contentHtml = `
+                <div class="image-wrapper">
+                    <img src="${imageURL}" alt="Uploaded image" class="max-w-full h-auto rounded-md">
+                </div>`;
+            // For image-only messages, remove padding/background from bubble if desired.
+            // Add 'image-only' class to the bubbleClass for custom styling
+            if (!text || text.trim() === '') { // If there's no text content along with image
+                 bubbleClass += ' image-only';
+                 // Ensure the background and padding are transparent for image-only
+                 bubbleClass = bubbleClass.replace('bg-gray-800/70', 'bg-transparent').replace('bg-indigo-600/70', 'bg-transparent')
+                                .replace('p-4', 'p-1').replace('border', ''); // Remove border for clean image bubble
+            }
+        } else if (type === 'document' && fileName) {
+            contentHtml = `
+                <div class="sent-file-preview-doc">
+                    <i class="fas fa-file-alt"></i>
+                    <span>${fileName}</span>
+                </div>`;
+        }
+
+        // Handle YouTube embeds (if your AI returns YouTube links)
+        const youtubePattern = /(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|)([\w-]{11})(?:\S+)?/g;
+        let youtubeMatch;
+        let finalContentHtml = contentHtml; // Start with the rendered text/file/image content
+
+        while ((youtubeMatch = youtubePattern.exec(text)) !== null) {
+            const videoId = youtubeMatch[1];
+            const embedHtml = `
+                <div class="youtube-embed-wrapper mt-2">
+                    <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>`;
+            finalContentHtml += embedHtml; // Append YouTube embed after text/file/image
+        }
+
+        messageContentHtml = `
+            <div class="${bubbleClass}">
+                ${finalContentHtml}
+                <p class="${timestampClass}">${getCurrentTime()}</p>
+            </div>`;
+
+        if (sender === 'user') {
+            messageDiv.innerHTML = messageContentHtml + avatarHtml;
+        } else { // bot
+            messageDiv.innerHTML = avatarHtml + messageContentHtml;
+        }
+
+        chatBox.appendChild(messageDiv);
+        if (isNew) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    // --- Fungsi Pengelola File ---
+    function handleFileSelect(event) {
+        const files = event.target.files;
+        if (files.length > 0) {
+            attachedFile = files[0];
+            filePreviewContainer.innerHTML = ''; // Clear previous preview
+            filePreviewContainer.classList.remove('hidden');
+
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('file-preview-item', 'bg-gray-800/70', 'p-2', 'rounded-md', 'flex', 'items-center', 'space-x-2', 'text-sm', 'text-gray-300');
+
+            if (attachedFile.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(attachedFile);
+                img.classList.add('w-10', 'h-10', 'object-cover', 'rounded-md');
+                fileItem.appendChild(img);
+            } else {
+                const icon = document.createElement('i');
+                icon.classList.add('fas', 'fa-file-alt', 'text-indigo-400');
+                fileItem.appendChild(icon);
+            }
+
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.textContent = attachedFile.name;
+            fileItem.appendChild(fileNameSpan);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.classList.add('remove-file-btn', 'text-gray-400', 'hover:text-red-500');
+            removeBtn.innerHTML = '<i class="fas fa-times-circle"></i>';
+            removeBtn.addEventListener('click', () => {
+                attachedFile = null;
+                filePreviewContainer.innerHTML = '';
+                filePreviewContainer.classList.add('hidden');
+                imageInput.value = ''; // Clear input to allow re-selecting same file
+                docInput.value = ''; // Clear input
+            });
+            fileItem.appendChild(removeBtn);
+            filePreviewContainer.appendChild(fileItem);
+        } else {
+            attachedFile = null;
+            filePreviewContainer.innerHTML = '';
+            filePreviewContainer.classList.add('hidden');
+        }
+    }
+
+    // --- Fungsi Kirim Pesan ---
     async function handleSend() {
         const userMessage = userInput.value.trim();
-        if (userMessage === '' && !attachedFile) return;
+        if (!userMessage && !attachedFile) return;
 
-        if (currentChatId === null) {
-            startNewChat();
-        }
-        
-        const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
-        addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
-        addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+        // Show user's message
+        const fileType = attachedFile ? (attachedFile.type.startsWith('image/') ? 'image' : 'document') : 'text';
+        const fileDataURL = attachedFile ? URL.createObjectURL(attachedFile) : null;
+        const fileName = attachedFile ? attachedFile.name : null;
 
+        addMessageToDOM(userMessage, 'user', fileType, attachedFile ? attachedFile.name : null, fileName, fileDataURL);
+        addMessageToData(userMessage, 'user', fileType, attachedFile ? attachedFile.name : null, fileName, fileDataURL);
+
+        // Clear input and file
         userInput.value = '';
-        clearFilePreview();
+        attachedFile = null;
+        filePreviewContainer.innerHTML = '';
+        filePreviewContainer.classList.add('hidden');
+        imageInput.value = '';
+        docInput.value = '';
 
-        addMessageToDOM("lagi mikir bentar...", 'bot');
+        // Show typing indicator
+        typingIndicator.classList.remove('hidden');
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-        const currentChat = chats.find(c => c.id === currentChatId);
-        const conversationHistoryForAPI = [];
-
-        let personaPrompt = '';
-        console.log("Current Model Selected:", currentModel);
-        if (currentModel === 'gen-z') {
-            personaPrompt = `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Nih, bestie, ada gambar bagus buat kamu! [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
-        } else if (currentModel === 'normal') {
-            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Be polite, formal where appropriate, and do not use slang or emojis unless explicitly asked. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Baik, ini adalah contoh gambar yang saya temukan: [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
+        try {
+            // Call Gemini API
+            const response = await getGeminiResponse(userMessage);
+            addMessageToDOM(response, 'bot', 'text', null, null, null); // AI response is always text for now
+            addMessageToData(response, 'bot', 'text', null, null, null);
+        } catch (error) {
+            console.error('Error fetching Gemini response:', error);
+            addMessageToDOM('Oops! Terjadi kesalahan saat menghubungi AI. Coba lagi nanti.', 'bot', 'text', null, null, null);
+            addMessageToData('Oops! Terjadi kesalahan saat menghubungi AI. Coba lagi nanti.', 'bot', 'text', null, null, null);
+        } finally {
+            typingIndicator.classList.add('hidden');
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-        console.log("Persona Prompt Generated:", personaPrompt);
-        
-        if (personaPrompt) {
-            conversationHistoryForAPI.push({
-                "role": "user",
-                "parts": [{ "text": personaPrompt }]
+    }
+
+    // --- Integrasi Gemini API ---
+    async function getGeminiResponse(prompt) {
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+
+        let requestBody = {
+            contents: [{
+                parts: [{
+                    text: prompt
+                }]
+            }]
+        };
+
+        // Jika ada file terlampir, tambahkan ke request body
+        if (attachedFile) {
+            const base64Data = await readFileAsBase64(attachedFile);
+            const mimeType = attachedFile.type;
+
+            // Untuk model multi-modal seperti gemini-pro-vision, jika Anda menggunakannya
+            // Jika hanya gemini-pro, file image tidak bisa langsung diproses
+            // Asumsi di sini kita kirim image untuk model yang mendukung (misal gemini-pro-vision)
+            requestBody.contents[0].parts.push({
+                inlineData: {
+                    mimeType: mimeType,
+                    data: base64Data
+                }
             });
         }
 
-        const MAX_HISTORY_MESSAGES = 10;
-        const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
 
-        for (const msg of messagesToSend) {
-            const contentParts = [];
-            let processedText = msg.content; 
-
-            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
-            const matches = [...(msg.content || '').matchAll(youtubeRegex)]; 
-
-            if (matches.length > 0) {
-                for (const match of matches) {
-                    const videoId = match[1];
-                    const videoDetails = await getYouTubeVideoDetails(videoId); 
-                    if (videoDetails) {
-                        processedText = (processedText || '') + `\n\n[INFO VIDEO YOUTUBE: Judul: "${videoDetails.title}", Deskripsi: "${videoDetails.description ? videoDetails.description.substring(0, Math.min(videoDetails.description.length, 100)) + '...' : 'Tidak ada deskripsi.'}"]`;
-                    }
-                }
-            }
-
-            if (processedText) {
-                contentParts.push({ "text": processedText });
-            }
-            if (msg.fileObject) {
-                contentParts.push({
-                    "inline_data": {
-                        "mime_type": msg.fileObject.mimeType,
-                        "data": msg.fileObject.base64
-                    }
-                });
-            }
-            
-            if (contentParts.length > 0) {
-                conversationHistoryForAPI.push({
-                    "role": msg.sender === 'user' ? "user" : "model",
-                    "parts": contentParts
-                });
-            }
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('API Error:', errorData);
+            throw new Error(`API request failed with status ${response.status}: ${errorData.error ? errorData.error.message : 'Unknown error'}`);
         }
 
-        const aiRawResponse = await getAIResponse(conversationHistoryForAPI);
+        const data = await response.json();
+        let aiRawResponse = data.candidates[0].content.parts[0].text;
 
-        // Hapus pesan "lagi mikir bentar..."
-        if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message') && chatBox.lastChild.querySelector('.chat-message').textContent === "lagi mikir bentar...") {
-            chatBox.removeChild(chatBox.lastChild);
-        }
-        
-        // Cek lagi untuk kasus "edit foto" atau "ganti background" setelah mendapatkan respons AI
-        if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
-             const staticMessage = "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
-             addMessageToDOM(staticMessage, 'bot');
-             addMessageToData(staticMessage, 'bot');
-             return; 
-        }
-
-        // --- Logika untuk mendeteksi dan menampilkan gambar dari respons AI ---
-        let finalAIMessage = aiRawResponse;
+        // Mendeteksi dan mengekstrak placeholder gambar dari respons AI jika ada
+        const imagePattern = /\[gambar:([^\]]+?)\]/i; // Regex untuk [gambar:url_gambar]
         let aiImageURL = null;
-        const imagePattern = /\[GAMBAR:\s*(https?:\/\/[^\s\]]+\.(?:png|jpe?g|gif|webp|svg))\]/i;
         const match = aiRawResponse.match(imagePattern);
-
         if (match && match[1]) {
             aiImageURL = match[1];
             // Hapus placeholder gambar dari teks pesan akhir
-            finalAIMessage = aiRawResponse.replace(imagePattern, '').trim();
+            aiRawResponse = aiRawResponse.replace(imagePattern, '').trim();
         }
 
-        addMessageToDOM(finalAIMessage, 'bot', 'text', null, null, aiImageURL);
-        addMessageToData(finalAIMessage, 'bot', 'text', null, null, aiImageURL);
+        return aiRawResponse;
+    }
+
+    // Helper untuk membaca file sebagai Base64
+    function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]); // Ambil hanya bagian base64
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function startNewChat() {
+        const newChat = {
+            id: 'chat-' + Date.now(),
+            title: 'Percakapan Baru', // Or generate a title based on first message
+            messages: []
+        };
+        chats.unshift(newChat); // Add to the beginning
+        currentChatId = newChat.id;
+        saveChats();
+        chatBox.innerHTML = ''; // Clear chat display
+        addMessageToDOM('Halo, space explorer! 🌌 Saya Mas Riski, AI pendamping Anda untuk menjelajahi alam semesta pengetahuan. Apa yang ingin Anda jelajahi hari ini?', 'bot', 'text', null, null, null);
+        addMessageToData('Halo, space explorer! 🌌 Saya Mas Riski, AI pendamping Anda untuk menjelajahi alam semesta pengetahuan. Apa yang ingin Anda jelajahi hari ini?', 'bot', 'text', null, null, null);
+        // renderHistory(); // Akan error jika historyList tidak ada
     }
 
     // --- Event Listeners ---
     sendButton.addEventListener('click', handleSend);
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSend();
+        if (e.key === 'Enter' && !e.shiftKey) { // Tambahkan !e.shiftKey agar Shift+Enter bisa newline
+            e.preventDefault(); // Mencegah newline default
+            handleSend();
+        }
     });
-    newChatBtn.addEventListener('click', startNewChat);
+
+    // Event listeners untuk tombol upload file
     uploadDocBtn.addEventListener('click', () => docInput.click());
     uploadImgBtn.addEventListener('click', () => imageInput.click());
     imageInput.addEventListener('change', handleFileSelect);
     docInput.addEventListener('change', handleFileSelect);
 
-    clearHistoryBtn.addEventListener('click', () => {
-        if (confirm("Yakin mau hapus semua riwayat obrolanmu? Ini bakal permanen lho!")) {
-            chats = [];
-            localStorage.removeItem('ai-chat-history');
-            currentChatId = null;
-            startNewChat();
-            console.log("Riwayat obrolan telah dihapus!");
-        }
-    });
+    /*
+    // Event listeners untuk sidebar (dikomentari jika elemen tidak ada di HTML)
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', startNewChat);
+    }
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm("Yakin mau hapus semua riwayat obrolanmu? Ini bakal permanen lho!")) {
+                chats = [];
+                localStorage.removeItem('ai-chat-history');
+                currentChatId = null;
+                startNewChat();
+                // renderHistory(); // Akan error jika historyList tidak ada
+                console.log("Riwayat obrolan telah dihapus!");
+            }
+        });
+    }
+    if (aiModelSelect) {
+        aiModelSelect.addEventListener('change', (e) => {
+            currentModel = e.target.value;
+            console.log(`Model AI diubah menjadi: ${currentModel}`);
+        });
+    }
+    */
 
-    aiModelSelect.addEventListener('change', (e) => {
-        currentModel = e.target.value;
-        console.log(`Model AI diubah menjadi: ${currentModel}`);
-    });
+    // --- Star Generation (dari cosmo.html, dipindahkan ke sini untuk kerapian) ---
+    const universe = document.getElementById('universe');
+    if (universe) { // Pastikan elemen #universe ada
+        const starsCount = 200;
+        for (let i = 0; i < starsCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 2 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            universe.appendChild(star);
+        }
+    }
 
     // --- Inisialisasi Aplikasi ---
     loadChats();
-    renderHistory();
-    renderChatBox();
+    // renderHistory(); // Akan error jika historyList tidak ada
 });
