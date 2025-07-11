@@ -313,11 +313,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getAIResponse(conversationParts) { 
         let modelToUse;
         if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-1.5-flash'; // Menggunakan flash untuk kecepatan
+            modelToUse = 'gemini-2.5-flash'; // Menggunakan flash untuk kecepatan
         } else if (currentModel === 'normal') {
             modelToUse = 'gemini-1.5-flash'; // Menggunakan flash juga untuk normal, bisa ganti ke 'gemini-1.5-pro' jika mau yang lebih powerful tapi mungkin lebih lambat/mahal
         } else {
-            modelToUse = 'gemini-1.5-flash'; // Default ke flash
+            modelToUse = 'gemini-pro'; // Default ke flash
         }
 
         try {
