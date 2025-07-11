@@ -71,26 +71,7 @@
     </div>
 </div>
 
-<script>
-// Basic script to toggle the menu visibility.
-// You should integrate this logic into your existing script.js
-document.addEventListener('DOMContentLoaded', function() {
-    const menuBtn = document.getElementById('menu-btn');
-    const sideMenu = document.getElementById('side-menu');
-    const chatBox = document.getElementById('chat-box');
-
-    menuBtn.addEventListener('click', () => {
-        sideMenu.classList.toggle('side-menu-hidden');
-    });
-
-    // Optional: Click outside to close menu
-    document.addEventListener('click', function(event) {
-        if (!sideMenu.contains(event.target) && !menuBtn.contains(event.target)) {
-            sideMenu.classList.add('side-menu-hidden');
-        }
-    });
-});
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
