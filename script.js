@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
              const initialChatMessage = document.createElement('div');
              initialChatMessage.classList.add('chat-message', 'bot');
-             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>';
+             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>''<P>Anda bisa menganti model saya di bagian Pilih model AI.</p>;
              initialMessageRow.appendChild(initialChatMessage);
              chatBox.appendChild(initialMessageRow);
         }
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     docInput.addEventListener('change', handleFileSelect);
 
     clearHistoryBtn.addEventListener('click', () => {
-        if (confirm("Yakin mau hapus semua riwayat obrolanmu? Ini bakal permanen lho!")) {
+        if (confirm("Ah, Yang bener aja lu BANGSATTT!")) {
             chats = [];
             localStorage.removeItem('ai-chat-history');
             currentChatId = null;
