@@ -1,665 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CosmoChat AI - Open Source AI API</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .planet-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        }
-        
-        .stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-        
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: twinkle 5s infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
-        
-        .chat-container {
-            backdrop-filter: blur(10px);
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .message-ai {
-            background: rgba(30, 41, 59, 0.7);
-            border-left: 3px solid #3b82f6;
-        }
-        
-        .message-user {
-            background: rgba(30, 64, 175, 0.3);
-            border-right: 3px solid #60a5fa;
-        }
-        
-        .gradient-text {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .glow {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        #canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-    </style>
-</head>
-<body class="bg-slate-900 text-slate-100 font-sans">
-    <div class="planet-container">
-        <div class="stars" id="stars"></div>
-        <canvas id="canvas"></canvas>
-        
-        <!-- Navigation -->
-        <nav class="relative z-50 p-6 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <span class="text-xl font-bold gradient-text">CosmoChat AI</span>
-            </div>
-            <div class="hidden md:flex space-x-6">
-                <a href="#features" class="hover:text-blue-400 transition">Features</a>
-                <a href="#api" class="hover:text-blue-400 transition">API</a>
-                <a href="#docs" class="hover:text-blue-400 transition">Docs</a>
-                <a href="#community" class="hover:text-blue-400 transition">Community</a>
-            </div>
-            <div class="flex space-x-4">
-                <a href="https://github.com/cosmochat" target="_blank" class="p-2 rounded-full hover:bg-slate-800 transition">
-                    <i class="fab fa-github"></i>
-                </a>
-                <button class="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition glow">
-                    Get Started
-                </button>
-            </div>
-            <button class="md:hidden text-xl">
-                <i class="fas fa-bars"></i>
-            </button>
-        </nav>
-        
-        <!-- Hero Section -->
-        <div class="relative z-40 container mx-auto px-6 pt-32 pb-20">
-            <div class="max-w-3xl">
-                <h1 class="text-5xl md:text-6xl font-bold mb-6">
-                    <span class="gradient-text">Open Source</span> AI Chat API
-                </h1>
-                <p class="text-xl md:text-2xl text-slate-300 mb-8">
-                    <span id="typed"></span>
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition glow flex items-center space-x-2">
-                        <i class="fas fa-rocket"></i>
-                        <span>Start Chatting</span>
-                    </button>
-                    <button class="px-6 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition border border-slate-700 flex items-center space-x-2">
-                        <i class="fab fa-github"></i>
-                        <span>View on GitHub</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Floating Chat Demo -->
-        <div class="hidden lg:block absolute right-10 top-1/2 transform -translate-y-1/2 z-40 w-96">
-            <div class="chat-container rounded-xl shadow-2xl overflow-hidden">
-                <div class="bg-slate-800 p-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                            <i class="fas fa-robot"></i>
+    <head>
+        <meta charSet="utf-8"/>
+        <meta name="viewport" content="width=device-width"/>
+        <title>ARAI</title>
+        <meta name="robots" content="index,follow"/>
+        <meta name="description" content="Arai Systems is a cutting-edge framework integrating AI Copilot technology to revolutionize gaming and digital experiences. It empowers players and developers with intelligent, adaptive AI Agents, enhancing gameplay, creativity, and user engagement. By seamlessly merging advanced AI capabilities with modular design, Arai Systems transforms projects like 0xAstra into immersive, dynamic ecosystems, bridging the gap between gaming, AI innovation, and next-gen interactivity."/>
+        <meta name="twitter:card" content="summary_large_image"/>
+        <meta name="twitter:site" content="https://arai.systems"/>
+        <meta property="og:title" content="ARAI"/>
+        <meta property="og:description" content="Arai Systems is a cutting-edge framework integrating AI Copilot technology to revolutionize gaming and digital experiences. It empowers players and developers with intelligent, adaptive AI Agents, enhancing gameplay, creativity, and user engagement. By seamlessly merging advanced AI capabilities with modular design, Arai Systems transforms projects like 0xAstra into immersive, dynamic ecosystems, bridging the gap between gaming, AI innovation, and next-gen interactivity."/>
+        <meta property="og:url" content="https://arai.systems"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:image" content="https://arai.systems/og.webp"/>
+        <meta property="og:image:alt" content="Arai Systems is a cutting-edge framework integrating AI Copilot technology to revolutionize gaming and digital experiences. It empowers players and developers with intelligent, adaptive AI Agents, enhancing gameplay, creativity, and user engagement. By seamlessly merging advanced AI capabilities with modular design, Arai Systems transforms projects like 0xAstra into immersive, dynamic ecosystems, bridging the gap between gaming, AI innovation, and next-gen interactivity."/>
+        <meta property="og:image:type" content="image/*"/>
+        <meta property="og:image:width" content="1280"/>
+        <meta property="og:image:height" content="720"/>
+        <meta property="og:site_name" content="ARAI"/>
+        <link rel="canonical" href="https://arai.systems"/>
+        <meta name="next-head-count" content="18"/>
+        <link rel="preload" href="/_next/static/css/44ca746421915344.css?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" as="style"/>
+        <link rel="stylesheet" href="/_next/static/css/44ca746421915344.css?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" data-n-g=""/>
+        <noscript data-n-css=""></noscript>
+        <script defer="" nomodule="" src="/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz"></script>
+        <script src="/_next/static/chunks/webpack-2ecf8fd89c986274.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/chunks/framework-51e90279bbf5a0ec.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/chunks/main-a01ec27f0f7a84ed.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/chunks/pages/_app-36640370860742c8.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/chunks/4306-8bdbb42649bc083a.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/chunks/pages/index-be2462c9a8cb6d28.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/MVQMOP2SbALkECmuyFaZz/_buildManifest.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+        <script src="/_next/static/MVQMOP2SbALkECmuyFaZz/_ssgManifest.js?dpl=dpl_8rv53u1h6vj9FcXuBkWuCaX7D5rz" defer=""></script>
+    </head>
+    <body>
+        <div id="__next">
+            <div data-rk="">
+                <style>
+                    [data-rk] {
+                        --rk-blurs-modalOverlay: blur(0px);
+                        --rk-fonts-body: SFRounded, ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                        --rk-radii-actionButton: 9999px;
+                        --rk-radii-connectButton: 12px;
+                        --rk-radii-menuButton: 12px;
+                        --rk-radii-modal: 24px;
+                        --rk-radii-modalMobile: 28px;
+                        --rk-colors-accentColor: #3898FF;
+                        --rk-colors-accentColorForeground: #FFF;
+                        --rk-colors-actionButtonBorder: rgba(255, 255, 255, 0.04);
+                        --rk-colors-actionButtonBorderMobile: rgba(255, 255, 255, 0.08);
+                        --rk-colors-actionButtonSecondaryBackground: rgba(255, 255, 255, 0.08);
+                        --rk-colors-closeButton: rgba(224, 232, 255, 0.6);
+                        --rk-colors-closeButtonBackground: rgba(255, 255, 255, 0.08);
+                        --rk-colors-connectButtonBackground: #1A1B1F;
+                        --rk-colors-connectButtonBackgroundError: #FF494A;
+                        --rk-colors-connectButtonInnerBackground: linear-gradient(0deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.15));
+                        --rk-colors-connectButtonText: #FFF;
+                        --rk-colors-connectButtonTextError: #FFF;
+                        --rk-colors-connectionIndicator: #30E000;
+                        --rk-colors-downloadBottomCardBackground: linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F;
+                        --rk-colors-downloadTopCardBackground: linear-gradient(126deg, rgba(120, 120, 120, 0.2) 9.49%, rgba(0, 0, 0, 0) 71.04%), #1A1B1F;
+                        --rk-colors-error: #FF494A;
+                        --rk-colors-generalBorder: rgba(255, 255, 255, 0.08);
+                        --rk-colors-generalBorderDim: rgba(255, 255, 255, 0.04);
+                        --rk-colors-menuItemBackground: rgba(224, 232, 255, 0.1);
+                        --rk-colors-modalBackdrop: rgba(0, 0, 0, 0.5);
+                        --rk-colors-modalBackground: #1A1B1F;
+                        --rk-colors-modalBorder: rgba(255, 255, 255, 0.08);
+                        --rk-colors-modalText: #FFF;
+                        --rk-colors-modalTextDim: rgba(224, 232, 255, 0.3);
+                        --rk-colors-modalTextSecondary: rgba(255, 255, 255, 0.6);
+                        --rk-colors-profileAction: rgba(224, 232, 255, 0.1);
+                        --rk-colors-profileActionHover: rgba(224, 232, 255, 0.2);
+                        --rk-colors-profileForeground: rgba(224, 232, 255, 0.05);
+                        --rk-colors-selectedOptionBorder: rgba(224, 232, 255, 0.1);
+                        --rk-colors-standby: #FFD641;
+                        --rk-shadows-connectButton: 0px 4px 12px rgba(0, 0, 0, 0.1);
+                        --rk-shadows-dialog: 0px 8px 32px rgba(0, 0, 0, 0.32);
+                        --rk-shadows-profileDetailsAction: 0px 2px 6px rgba(37, 41, 46, 0.04);
+                        --rk-shadows-selectedOption: 0px 2px 6px rgba(0, 0, 0, 0.24);
+                        --rk-shadows-selectedWallet: 0px 2px 6px rgba(0, 0, 0, 0.24);
+                        --rk-shadows-walletLogo: 0px 2px 16px rgba(0, 0, 0, 0.16);
+                    }
+                </style>
+                <main class="font-tmedium w-screen h-screen relative flex flex-col items-center bg-[url(/bg.webp)] bg-cover pt-10 [&amp;&gt;*]:shrink-0 px-4 overflow-hidden">
+                    <div class="relative h-[90px] max-w-[1330px] w-full overflow-visible">
+                        <img src="/head.svg" class="w-full absolute"/>
+                        <div class="text-[#131313] active:scale-75 duration-200 text-[14px]/[32px] w-fit cursor-pointer font-textra flex justify-center items-center ml-auto mt-3 relative">
+                            <svg width="180" height="33" viewBox="0 0 180 33" fill="#D2FD2B" xmlns="http://www.w3.org/2000/svg" class="absolute w-[180px]">
+                                <path d="M10.3809 0.0012481L39.4288 0.00320123C39.8575 0.00378737 40.2876 0.0394765 40.6847 0.0676544C41.8651 0.151352 42.9348 0.563461 43.9249 0.988553C45.4707 1.65211 47.0796 1.90123 48.8097 1.89969C62.3684 1.88745 65.9281 1.8832 69.4874 1.88211H110.513C114.072 1.8832 117.632 1.88744 131.191 1.89969C132.921 1.90118 134.531 1.65209 136.076 0.988553C137.066 0.56351 138.136 0.151302 139.316 0.0676544C139.713 0.0394768 140.144 0.00377434 140.572 0.00320123L169.62 0.0012481C169.853 0.00122819 170.165 -0.00902206 170.462 0.0295684L170.631 0.054959C171.466 0.203276 172.173 0.632663 172.615 1.43582C172.74 1.66238 172.863 1.89183 172.982 2.12429L179.383 14.6634H179.384L179.418 14.7307C179.538 14.9646 179.667 15.2161 179.779 15.4768L179.78 15.4778C180.04 16.0805 180.07 16.7004 179.872 17.3059L179.773 17.5647C179.664 17.8109 179.546 18.0505 179.429 18.2796C177.277 22.4913 175.125 26.7032 172.973 30.9143C172.892 31.0714 172.838 31.1636 172.778 31.2893V31.2903C172.521 31.8305 172.165 32.2736 171.691 32.5735C171.274 32.8368 170.792 32.9722 170.258 32.9886H169.262C159.801 32.9886 150.343 32.9763 140.884 33.0003C139.424 33.004 138.004 32.817 136.628 32.2708L136.354 32.1565C135.929 31.9719 135.49 31.8073 135.041 31.6438C134.173 31.3271 133.299 31.1391 132.398 31.1565H47.6036C46.7021 31.139 45.8285 31.3271 44.96 31.6438C44.5115 31.8073 44.0726 31.9719 43.6475 32.1565L43.3731 32.2708C41.997 32.8171 40.5775 33.0039 39.1173 33.0003C29.6585 32.9763 20.1998 32.9886 10.7393 32.9886H9.74325C9.20891 32.9722 8.72761 32.8369 8.31063 32.5735C7.83586 32.2736 7.4802 31.8307 7.22274 31.2903V31.2893C7.16289 31.1635 7.10882 31.0716 7.02841 30.9143C4.87635 26.7031 2.72386 22.4913 0.572353 18.2796C0.455432 18.0504 0.336895 17.811 0.228603 17.5647L0.128994 17.3059C-0.0694042 16.7004 -0.0390498 16.0806 0.220791 15.4778L0.221767 15.4768C0.334451 15.2162 0.463352 14.9645 0.583096 14.7307L0.617275 14.6634H0.618252L7.01962 2.12429C7.1382 1.89193 7.26095 1.66228 7.38583 1.43582C7.82832 0.63272 8.53462 0.203188 9.3702 0.054959L9.53915 0.0295684C9.83633 -0.00900801 10.1483 0.00124231 10.3809 0.0012481ZM10.3809 1.00125C10.0952 1.00124 9.88148 0.993082 9.66806 1.02078C9.01821 1.10564 8.55449 1.38716 8.26181 1.91824L7.91024 2.57937L1.5079 15.1184V15.1194L1.47274 15.1868C1.41162 15.3061 1.35284 15.4218 1.29696 15.5354L1.13974 15.8743C0.952955 16.3078 0.954485 16.7291 1.14462 17.1624C1.24108 17.3817 1.34942 17.6 1.46395 17.8245L7.91903 30.4593C7.97096 30.5608 8.06132 30.7235 8.12606 30.8596C8.32103 31.2689 8.56273 31.5506 8.84481 31.7288C9.12514 31.9058 9.48171 32.0043 9.94442 31.9895C10.2131 31.9811 10.5002 31.9886 10.7393 31.9886C20.1982 31.9886 29.6597 31.9763 39.1202 32.0003C40.5843 32.0039 41.9495 31.8038 43.2491 31.2395C43.703 31.0424 44.1655 30.8694 44.6183 30.7044C45.5693 30.3576 46.5672 30.136 47.6231 30.1565H47.6642C47.6887 30.1566 47.7232 30.1574 47.7657 30.1575C47.8509 30.1577 47.971 30.1573 48.1231 30.1575C48.4282 30.1579 48.8628 30.1592 49.4083 30.1595C50.4997 30.16 52.0359 30.1602 53.8673 30.1604C57.5302 30.1608 62.3771 30.16 67.2237 30.1595C70.0014 30.1591 72.7792 30.1579 75.3341 30.1575V30.1565H86.8341V30.1575C91.7891 30.158 97.825 30.159 103.86 30.1595C110.936 30.16 118.013 30.1608 123.348 30.1604C126.015 30.1602 128.247 30.16 129.826 30.1595C130.615 30.1592 131.242 30.1579 131.678 30.1575C131.895 30.1573 132.066 30.1577 132.185 30.1575C132.244 30.1574 132.291 30.1566 132.324 30.1565H132.378C133.434 30.1361 134.432 30.3576 135.383 30.7044C135.836 30.8694 136.298 31.0424 136.752 31.2395C138.052 31.8037 139.417 32.0039 140.881 32.0003C150.341 31.9763 159.803 31.9886 169.262 31.9886C169.501 31.9885 169.788 31.9811 170.057 31.9895C170.519 32.0042 170.876 31.9057 171.156 31.7288C171.438 31.5506 171.68 31.2687 171.875 30.8596C171.94 30.7236 172.03 30.5607 172.082 30.4593L178.537 17.8245C178.652 17.6001 178.76 17.3816 178.857 17.1624C179.047 16.7292 179.048 16.3077 178.861 15.8743L178.704 15.5354C178.648 15.4217 178.59 15.3062 178.528 15.1868L178.493 15.1194V15.1184L172.091 2.57937L171.739 1.91824C171.447 1.38709 170.983 1.10572 170.333 1.02078C170.12 0.993057 169.906 1.00124 169.62 1.00125C159.938 1.00016 150.255 0.999938 140.573 1.0032C140.189 1.00372 139.803 1.03526 139.388 1.06472C138.387 1.13559 137.449 1.48739 136.471 1.9075C134.77 2.63753 133.019 2.90128 131.191 2.89969C104.183 2.8753 116.848 2.88204 90.1661 2.88211V2.88308C90.1107 2.88308 90.0552 2.88211 90.0001 2.88211C89.9452 2.88211 89.8902 2.88308 89.835 2.88308V2.88211C63.1522 2.88204 75.8177 2.87531 48.8106 2.89969C46.9815 2.90133 45.2311 2.63756 43.5304 1.9075C42.5518 1.48733 41.6141 1.13564 40.6134 1.06472C40.1981 1.03525 39.8125 1.00373 39.4278 1.0032C29.7457 0.999937 20.0631 1.00016 10.3809 1.00125Z"></path>
+                                <path d="M8.33398 1.00195H41.334L47.834 3.00195H90.334H131.834L139.334 1.00195H171.334L179.334 16.002L171.334 32.002H139.334L131.834 30.002H90.334H47.834L41.334 32.002H8.33398L0.333984 16.002L8.33398 1.00195Z"></path>
+                            </svg>
+                            <div class="relative">CONNECT WALLET</div>
                         </div>
-                        <span class="font-medium">CosmoChat AI</span>
                     </div>
-                    <div class="flex space-x-2">
-                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    </div>
-                </div>
-                <div class="h-96 overflow-y-auto p-4 space-y-4" id="demo-chat">
-                    <div class="message-ai rounded-lg p-3">
-                        <p>Hello! I'm CosmoChat, your open-source AI assistant. How can I help you today?</p>
-                    </div>
-                </div>
-                <div class="p-4 border-t border-slate-700">
-                    <div class="flex items-center space-x-2">
-                        <input type="text" placeholder="Type your message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button class="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Features Section -->
-    <section id="features" class="py-20 bg-slate-900">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Powerful <span class="gradient-text">Features</span></h2>
-                <p class="text-slate-400 max-w-2xl mx-auto">Explore the capabilities of our open-source AI chat platform</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-blue-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-code text-blue-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Open Source</h3>
-                    <p class="text-slate-400">Completely open-source with MIT license. Contribute, modify, and deploy your own version.</p>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-purple-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-brain text-purple-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Advanced AI</h3>
-                    <p class="text-slate-400">State-of-the-art natural language processing with customizable models.</p>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-green-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-plug text-green-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Easy API</h3>
-                    <p class="text-slate-400">Simple REST API with comprehensive documentation and client libraries.</p>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-yellow-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-shield-alt text-yellow-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Privacy Focused</h3>
-                    <p class="text-slate-400">Self-hostable solution that keeps your data private and secure.</p>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-red-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-cogs text-red-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Customizable</h3>
-                    <p class="text-slate-400">Train your own models or fine-tune existing ones for specific use cases.</p>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-6 hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-12 h-12 rounded-lg bg-indigo-900 flex items-center justify-center mb-4">
-                        <i class="fas fa-users text-indigo-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Community Driven</h3>
-                    <p class="text-slate-400">Active community contributing plugins, extensions, and improvements.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- API Section -->
-    <section id="api" class="py-20 bg-slate-800">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-                <div class="lg:w-1/2">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Simple <span class="gradient-text">API Integration</span></h2>
-                    <p class="text-slate-300 mb-6">Integrate CosmoChat AI into your applications with our straightforward API. Whether you're building a chatbot, virtual assistant, or any AI-powered feature, our API makes it easy.</p>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-4">
-                            <div class="mt-1">
-                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                                    <i class="fas fa-check text-sm"></i>
+                    <div class="max-w-[1150px] w-full mt-[calc(50vh_-_80px)] -translate-y-[50%] flex gap-4">
+                        <div class="flex flex-col gap-4 max-md:hidden">
+                            <div class="size-[354px] bg-[url(/arai_video_bg.svg)] bg-cover overflow-hidden">
+                                <video src="https://d1d65tr74gwbfn.cloudfront.net/arai_web/arai_fs.webm" playsinline="" loop="" autoplay="" muted="" class="size-full object-cover scale-125" poster="https://d1d65tr74gwbfn.cloudfront.net/arai_web/arai_poster.webp"></video>
+                            </div>
+                            <div class="w-[354px] h-[185px] bg-[url(/code_snipet_bg.svg)] bg-cover overflow-scroll p-5 text-[12px]/[15px] whitespace-pre-wrap font-tlight codesnipet"></div>
+                        </div>
+                        <div class="w-0 h-[70vh] md:h-auto grow border border-white relative flex flex-col items-center">
+                            <div class="w-full flex flex-col gap-1 pb-[88px] p-8 h-0 grow overflow-auto overscroll-contain text-[16px]/[20px]" role="container"></div>
+                            <div class="max-w-[calc(100%_-_32px)] md:max-w-[640px] backdrop-blur-lg bg-black/50 w-full h-[48px] absolute bottom-5 flex items-center border border-white focus-within:border-[#d2fd2b] px-3 gap-4">
+                                <input class="bg-transparent w-0 grow outline-none shadow-none h-[44px] placeholder:text-[#8D8D8D] text-[12px]" placeholder="Type your command here" value=""/>
+                                <div class="bg-[#d2fd2b] h-[28px] w-[90px] rounded-sm flex items-center justify-center active:scale-75 hover:bg-[#b6dc1f] duration-200 cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right text-[#101010]">
+                                        <path d="M5 12h14"></path>
+                                        <path d="m12 5 7 7-7 7"></path>
+                                    </svg>
                                 </div>
                             </div>
-                            <div>
-                                <h4 class="font-bold mb-1">RESTful Endpoints</h4>
-                                <p class="text-slate-400">Standard HTTP endpoints for easy integration with any programming language.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-4">
-                            <div class="mt-1">
-                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                                    <i class="fas fa-check text-sm"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold mb-1">WebSocket Support</h4>
-                                <p class="text-slate-400">Real-time communication for interactive chat experiences.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-4">
-                            <div class="mt-1">
-                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                                    <i class="fas fa-check text-sm"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold mb-1">Client Libraries</h4>
-                                <p class="text-slate-400">Official libraries for JavaScript, Python, Java, and more.</p>
-                            </div>
+                            <div class="self-start max-w-[80%] px-4 py-3 whitespace-pre-wrap text-[14px] bg-[#d2fd2b] h-[26px] w-[70px] rounded-sm items-center justify-center active:scale-75 hover:bg-[#b6dc1f] duration-200 cursor-pointer text-[#101010] mt-1 mb-5 hidden"></div>
                         </div>
                     </div>
-                    
-                    <button class="mt-8 px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition glow flex items-center space-x-2">
-                        <i class="fas fa-book"></i>
-                        <span>View API Documentation</span>
-                    </button>
-                </div>
-                
-                <div class="lg:w-1/2 bg-slate-900 rounded-xl overflow-hidden">
-                    <div class="bg-slate-800 p-4 flex items-center justify-between border-b border-slate-700">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                        </div>
-                        <span class="text-sm text-slate-400">JavaScript Example</span>
-                    </div>
-                    <div class="p-6">
-                        <pre class="text-sm text-slate-300 overflow-x-auto">
-<span class="text-blue-400">const</span> <span class="text-yellow-300">response</span> = <span class="text-blue-400">await</span> <span class="text-purple-400">fetch</span>(<span class="text-green-400">'https://api.cosmochat.ai/v1/chat'</span>, {
-    <span class="text-blue-400">method</span>: <span class="text-green-400">'POST'</span>,
-    <span class="text-blue-400">headers</span>: {
-        <span class="text-green-400">'Content-Type'</span>: <span class="text-green-400">'application/json'</span>,
-        <span class="text-green-400">'Authorization'</span>: <span class="text-green-400">`Bearer ${API_KEY}`</span>
-    },
-    <span class="text-blue-400">body</span>: <span class="text-purple-400">JSON</span>.<span class="text-yellow-300">stringify</span>({
-        <span class="text-blue-400">model</span>: <span class="text-green-400">'cosmo-7b'</span>,
-        <span class="text-blue-400">messages</span>: [
+                </main>
+            </div>
+        </div>
+        <script id="__NEXT_DATA__" type="application/json">
             {
-                <span class="text-blue-400">role</span>: <span class="text-green-400">'user'</span>,
-                <span class="text-blue-400">content</span>: <span class="text-green-400">'Hello, how are you?'</span>
-            }
-        ],
-        <span class="text-blue-400">temperature</span>: <span class="text-yellow-300">0.7</span>
-    })
-});
-
-<span class="text-blue-400">const</span> <span class="text-yellow-300">data</span> = <span class="text-blue-400">await</span> <span class="text-yellow-300">response</span>.<span class="text-purple-400">json</span>();
-<span class="text-purple-400">console</span>.<span class="text-yellow-300">log</span>(<span class="text-yellow-300">data</span>.<span class="text-blue-400">choices</span>[<span class="text-yellow-300">0</span>].<span class="text-blue-400">message</span>);</pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Community Section -->
-    <section id="community" class="py-20 bg-slate-900">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Join Our <span class="gradient-text">Community</span></h2>
-                <p class="text-slate-400 max-w-2xl mx-auto">Connect with developers, contributors, and AI enthusiasts from around the world</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <div class="bg-slate-800 rounded-xl p-8 text-center hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-16 h-16 rounded-full bg-blue-900 flex items-center justify-center mx-auto mb-4">
-                        <i class="fab fa-github text-2xl text-blue-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">GitHub</h3>
-                    <p class="text-slate-400 mb-4">Star, fork, and contribute to our open-source repository.</p>
-                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center justify-center space-x-1">
-                        <span>View on GitHub</span>
-                        <i class="fas fa-arrow-right text-sm"></i>
-                    </a>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-8 text-center hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-16 h-16 rounded-full bg-purple-900 flex items-center justify-center mx-auto mb-4">
-                        <i class="fab fa-discord text-2xl text-purple-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">Discord</h3>
-                    <p class="text-slate-400 mb-4">Chat with the community and get real-time support.</p>
-                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center justify-center space-x-1">
-                        <span>Join Discord</span>
-                        <i class="fas fa-arrow-right text-sm"></i>
-                    </a>
-                </div>
-                
-                <div class="bg-slate-800 rounded-xl p-8 text-center hover:transform hover:-translate-y-2 transition duration-300 border border-slate-700 hover:border-blue-500">
-                    <div class="w-16 h-16 rounded-full bg-red-900 flex items-center justify-center mx-auto mb-4">
-                        <i class="fab fa-youtube text-2xl text-red-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">YouTube</h3>
-                    <p class="text-slate-400 mb-4">Tutorials, demos, and community showcases.</p>
-                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center justify-center space-x-1">
-                        <span>Watch Videos</span>
-                        <i class="fas fa-arrow-right text-sm"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- CTA Section -->
-    <section class="py-20 bg-gradient-to-r from-blue-900 to-purple-900">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Build with <span class="gradient-text">CosmoChat AI</span>?</h2>
-            <p class="text-slate-300 max-w-2xl mx-auto mb-8">Join thousands of developers creating amazing AI-powered applications with our open-source platform.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button class="px-8 py-4 bg-white text-slate-900 rounded-lg hover:bg-slate-100 transition font-bold flex items-center space-x-2 pulse">
-                    <i class="fas fa-rocket"></i>
-                    <span>Get Started for Free</span>
-                </button>
-                <button class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-slate-900 transition font-bold flex items-center space-x-2">
-                    <i class="fas fa-book"></i>
-                    <span>Read Documentation</span>
-                </button>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer class="bg-slate-900 py-12 border-t border-slate-800">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <span class="text-xl font-bold gradient-text">CosmoChat AI</span>
-                    </div>
-                    <p class="text-slate-400">Open-source AI chat platform for developers and businesses.</p>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-slate-400 hover:text-blue-400 transition">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-blue-400 transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-blue-400 transition">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                        <a href="#" class="text-slate-400 hover:text-blue-400 transition">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Product</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Features</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Pricing</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">API</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Documentation</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Resources</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Blog</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Tutorials</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Community</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Support</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-4">Company</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">About</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Careers</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Privacy</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-blue-400 transition">Terms</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
-                <p>© 2023 CosmoChat AI. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-    
-    <script>
-        // Create stars background
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const starsCount = 200;
-            
-            for (let i = 0; i < starsCount; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                
-                // Random size between 1px and 3px
-                const size = Math.random() * 2 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                
-                // Random position
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                
-                // Random animation delay
-                star.style.animationDelay = `${Math.random() * 5}s`;
-                
-                starsContainer.appendChild(star);
-            }
-        }
-        
-        // Initialize 3D planet
-        function initPlanet() {
-            const canvas = document.getElementById('canvas');
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
-            
-            // Create planet
-            const geometry = new THREE.SphereGeometry(1.5, 32, 32);
-            const textureLoader = new THREE.TextureLoader();
-            const texture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-            const bumpMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-            const specularMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
-            
-            const material = new THREE.MeshPhongMaterial({
-                map: texture,
-                bumpMap: bumpMap,
-                bumpScale: 0.05,
-                specularMap: specularMap,
-                specular: new THREE.Color('grey'),
-                shininess: 5
-            });
-            
-            const planet = new THREE.Mesh(geometry, material);
-            scene.add(planet);
-            
-            // Add ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040);
-            scene.add(ambientLight);
-            
-            // Add directional light
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(5, 3, 5);
-            scene.add(directionalLight);
-            
-            // Add stars
-            const starsGeometry = new THREE.BufferGeometry();
-            const starsMaterial = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 0.05,
-                transparent: true
-            });
-            
-            const starsVertices = [];
-            for (let i = 0; i < 1000; i++) {
-                const x = (Math.random() - 0.5) * 2000;
-                const y = (Math.random() - 0.5) * 2000;
-                const z = (Math.random() - 0.5) * 2000;
-                starsVertices.push(x, y, z);
-            }
-            
-            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
-            const stars = new THREE.Points(starsGeometry, starsMaterial);
-            scene.add(stars);
-            
-            // Animation loop
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                planet.rotation.y += 0.002;
-                stars.rotation.y += 0.0005;
-                
-                renderer.render(scene, camera);
-            }
-            
-            animate();
-            
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        }
-        
-        // Typed.js animation
-        function initTyped() {
-            const typed = new Typed('#typed', {
-                strings: [
-                    'Build amazing AI applications with our open-source platform.',
-                    'Customizable, private, and community-driven AI solutions.',
-                    'Powerful API for developers and businesses.'
-                ],
-                typeSpeed: 50,
-                backSpeed: 30,
-                loop: true,
-                showCursor: true,
-                cursorChar: '|'
-            });
-        }
-        
-        // Demo chat animation
-        function initDemoChat() {
-            const demoChat = document.getElementById('demo-chat');
-            const messages = [
-                {
-                    text: "What can you do?",
-                    type: "user",
-                    delay: 2000
+                "props": {
+                    "pageProps": {
+                    }
                 },
-                {
-                    text: "I can help with coding, answer questions, generate content, and much more! I'm an open-source AI assistant that you can customize for your needs.",
-                    type: "ai",
-                    delay: 1000
+                "page": "/",
+                "query": {
                 },
-                {
-                    text: "How do I get started with the API?",
-                    type: "user",
-                    delay: 3000
-                },
-                {
-                    text: "Just visit our documentation at docs.cosmochat.ai. We have quickstart guides for multiple programming languages and a free tier to test the API.",
-                    type: "ai",
-                    delay: 1000
-                }
-            ];
-            
-            let currentIndex = 0;
-            
-            function addMessage() {
-                if (currentIndex < messages.length) {
-                    const message = messages[currentIndex];
-                    
-                    setTimeout(() => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.classList.add('rounded-lg', 'p-3', 'mb-2', 'max-w-[80%]');
-                        
-                        if (message.type === 'ai') {
-                            messageDiv.classList.add('message-ai', 'self-start');
-                        } else {
-                            messageDiv.classList.add('message-user', 'self-end', 'ml-auto');
-                        }
-                        
-                        messageDiv.innerHTML = `<p>${message.text}</p>`;
-                        demoChat.appendChild(messageDiv);
-                        demoChat.scrollTop = demoChat.scrollHeight;
-                        
-                        currentIndex++;
-                        addMessage();
-                    }, message.delay);
-                } else {
-                    // Restart the demo chat after a delay
-                    setTimeout(() => {
-                        demoChat.innerHTML = `
-                            <div class="message-ai rounded-lg p-3">
-                                <p>Hello! I'm CosmoChat, your open-source AI assistant. How can I help you today?</p>
-                            </div>
-                        `;
-                        currentIndex = 0;
-                        addMessage();
-                    }, 5000);
-                }
-            }
-            
-            // Start the demo chat
-            setTimeout(addMessage, 3000);
-        }
-        
-        // Smooth scrolling for navigation
-        function initSmoothScrolling() {
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-        }
-        
-        // Initialize everything when the page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            createStars();
-            initPlanet();
-            initTyped();
-            initDemoChat();
-            initSmoothScrolling();
-        });
-    </script>
-</body>
+                "buildId": "MVQMOP2SbALkECmuyFaZz",
+                "nextExport": true,
+                "autoExport": true,
+                "isFallback": false,
+                "scriptLoader": [
+                ]
+            }</script>
+    </body>
 </html>
