@@ -1,77 +1,70 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" href="https://chat.openai.com/favicon.ico" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI MAS RISKI - 3D Planet Interface</title>
-    <link rel="icon" href="https://chat.openai.com/favicon.ico" type="image/x-icon">
+    <title>AI MAS RISKI - Berinteraksi, Santuy, Gaskeun!</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-<div class="background-planet"></div>
 <div class="main-wrapper">
+
+   <div class="sidebar">
+    <div class="sidebar-header">
+        <h3>Riwayat Chat Lu</h3>
+        <button id="new-chat-btn" title="Mulai Percakapan Baru">+ Chat Baru</button> 
+        </div>
+      <div class="model-selection">
+        <h4>Pilih Model AI</h4>
+        <select id="ai-model-select">
+             <option value="gen-z">Mas Riski 2.5 (Gen Z)</option> 
+             <option value="normal">Mas Riski 2.5 (Normal AI)</option>
+        </select>
+    </div>
+    <ul id="history-list">
+        </ul>
+    <button id="clear-history-btn" title="Hapus Semua Riwayat"><i class="fas fa-trash-alt"></i> Hapus Riwayat</button>
+   </div>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="header-left">
-                <img src="anim.gif" alt="anim" class="header-avatar">
-                <div class="header-info">
-                    <h2>MAS RISKI</h2>
-                    <p><i class="fas fa-circle"></i> Online</p>
-                </div>
-            </div>
-            <div class="header-right">
-                <button id="menu-btn" title="Buka Menu">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
+            <img src="anim.gif" alt="anim" class="header-avatar">
+            <div class="header-info">
+                <h2>MAS RISKI</h2>
+                <p>Online</p>
             </div>
         </div>
-
-        <div id="side-menu" class="side-menu-hidden">
-             <div class="model-selection">
-                <h4>PILIH MODEL AI</h4>
-                <select id="ai-model-select">
-                     <option value="gen-z">Mas Riski 2.5 (Gen Z)</option>
-                     <option value="normal">Mas Riski 2.5 (Normal AI)</option>
-                </select>
-            </div>
-            <div class="history-container">
-                 <h4>RIWAYAT CHAT</h4>
-                 <ul id="history-list">
-                    </ul>
-            </div>
-            <div class="menu-actions">
-                <button id="new-chat-btn" title="Mulai Percakapan Baru"><i class="fas fa-plus"></i> Chat Baru</button>
-                <button id="clear-history-btn" title="Hapus Semua Riwayat"><i class="fas fa-trash"></i> Hapus Riwayat</button>
-            </div>
-        </div>
-
         <div class="chat-box" id="chat-box">
             <div class="message-row bot">
                 <img src="anim.gif" alt="AI Avatar" class="avatar">
                 <div class="chat-message bot">
-                    <p>Halo! Saya Mas Riski dalam mode 3D. Tanyakan apa saja di alam semesta ini.</p>
+                    <p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>
                 </div>
-            </div>
+          </div>
         </div>
         <div class="chat-input-area">
             <div id="file-preview-container"></div>
-            <div class="input-wrapper">
-                <button id="upload-doc-btn" class="upload-btn" title="Kirim File">
+            <div class="input-wrapper"> 
+                <button id="upload-doc-btn" class="upload-btn" title="Kirim Dokumen">
                     <i class="fas fa-paperclip"></i>
                 </button>
-                <input type="text" id="user-input" placeholder="Kirim pesan ke Mas Riski...">
+                <button id="upload-img-btn" class="upload-btn" title="Kirim Gambar">
+                    <i class="fas fa-image"></i>
+                </button>
+                
+                <input type="text" id="user-input" placeholder="Ketik sesuatu atau pilih file...">
                 <button id="send-btn" title="Kirim Pesan"><i class="fas fa-paper-plane"></i></button>
             </div>
+
             <input type="file" id="image-input" accept="image/*" style="display: none;">
             <input type="file" id="doc-input" accept=".txt,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" style="display: none;">
         </div>
     </div>
 </div>
 
-<script src="script.js"></script>
-
+<script src="script.js"></script> 
 </body>
 </html>
