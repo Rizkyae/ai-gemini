@@ -87,12 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
              initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>';
              initialMessageRow.appendChild(initialChatMessage);
              chatBox.appendChild(initialMessageRow);
-
-            const initialChatMessage = document.createElement('div');
-             initialChatMessage.classList.add('chat-message', 'bot');
-             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>';
-             initialMessageRow.appendChild(initialChatMessage);
-             chatBox.appendChild(initialMessageRow);
         }
 
         if (currentChat && currentChat.messages) {
