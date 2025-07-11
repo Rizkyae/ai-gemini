@@ -1,249 +1,207 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
-:root {
-    --primary-glow: #00d9ff;
-    --secondary-glow: #e040fb;
-    --dark-bg-1: #0a0a14;
-    --dark-bg-2: #101022;
-    --dark-bg-transparent: rgba(16, 16, 34, 0.85);
-    --text-primary: #e0e0e0;
-    --text-secondary: #a0a0b0;
-    --border-color: rgba(0, 217, 255, 0.2);
-}
-
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--dark-bg-1);
-    color: var(--text-primary);
+    background: linear-gradient(135deg, #ece9e6, #ffffff);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: hidden;
-    position: relative;
-}
-
-.background-planet {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150vh;
-    height: 150vh;
-    background: radial-gradient(circle, rgba(13, 110, 253, 0.3) 0%, rgba(13, 110, 253, 0) 60%);
-    transform: translate(-50%, -50%);
-    filter: blur(100px);
-    z-index: -1;
+    color: #333;
 }
 
 .main-wrapper {
+    display: flex;
     width: 95vw;
     height: 90vh;
-    max-width: 1000px;
-    background-color: var(--dark-bg-transparent);
+    max-width: 1200px;
+    background-color: #fff;
     border-radius: 20px;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 15px var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    display: flex;
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
-.chat-container {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative; /* For menu positioning */
-}
-
-/* --- Chat Header --- */
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.header-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid var(--primary-glow);
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-
-.header-info h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #fff;
-}
-
-.header-info p {
-    margin: 0;
-    font-size: 13px;
-    color: #00ffaa;
-}
-
-.header-info .fa-circle {
-    font-size: 8px;
-    margin-right: 5px;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-}
-
-#menu-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 24px;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-#menu-btn:hover {
-    color: var(--primary-glow);
-}
-
-/* --- Pop-up Menu --- */
-#side-menu {
-    position: absolute;
-    top: 70px; /* Below header */
-    right: 15px;
-    width: 300px;
-    background-color: rgba(30, 30, 50, 0.95);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(15px);
-    z-index: 100;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    transform-origin: top right;
+/* --- Sidebar --- */
+.sidebar {
+    width: 260px;
+    background-color: #f7f9fc;
+    border-right: 1px solid #eef;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    max-height: calc(100% - 90px);
+    position: relative; /* Untuk penempatan tombol hapus riwayat */
 }
 
-#side-menu.side-menu-hidden {
-    transform: scale(0.9);
-    opacity: 0;
-    pointer-events: none;
+.sidebar-header {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-#side-menu h4 {
-    padding: 15px 20px 10px;
+.sidebar-header h3 {
     margin: 0;
-    color: var(--primary-glow);
-    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 1px;
-    border-bottom: 1px solid var(--border-color);
+    color: #333;
 }
 
-.history-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 5px;
-}
-
-#history-list {
+.sidebar ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    overflow-y: auto;
+    flex-grow: 1; /* Agar history-list mengisi ruang yang tersedia */
+    padding-right: 5px; /* Memberikan sedikit padding agar scrollbar tidak terlalu mepet */
 }
 
-#history-list a {
-    display: block;
-    padding: 10px 15px;
-    color: var(--text-primary);
+.sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: #555;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     transition: background-color 0.2s, color 0.2s;
 }
 
-#history-list a:hover {
-    background-color: rgba(0, 217, 255, 0.1);
-    color: #fff;
+.sidebar li a:hover, .sidebar li a.active {
+    background-color: #e3e9f3;
+    color: #0d6efd;
 }
 
-.menu-actions {
-    padding: 15px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.menu-actions button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+/* Style untuk tombol Chat Baru */
+#new-chat-btn {
     width: 100%;
     padding: 10px;
-    border: 1px solid transparent;
+    margin-top: 15px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s;
-}
-
-#new-chat-btn {
-    background-color: var(--primary-glow);
-    color: var(--dark-bg-1);
+    transition: background-color 0.2s;
 }
 
 #new-chat-btn:hover {
-    background-color: #fff;
-    box-shadow: 0 0 15px var(--primary-glow);
+    background-color: #0b5ed7;
 }
 
-#clear-history-btn {
-    background-color: transparent;
-    border-color: #ff4d4f;
-    color: #ff4d4f;
-}
-
-#clear-history-btn:hover {
-    background-color: #ff4d4f;
-    color: #fff;
-    box-shadow: 0 0 15px #ff4d4f;
-}
-
+/* Style untuk bagian pemilihan model AI */
 .model-selection {
-    padding: 15px 20px;
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.model-selection h4 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
 }
 
 #ai-model-select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: var(--dark-bg-2);
+    background-color: #fff;
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
-    color: var(--text-primary);
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2C197.6L146.2%2C56.9L5.4%2C197.6c-7.2%2C7.2-18.9%2C7.2-26.1%2C0c-7.2-7.2-7.2-18.9%2C0-26.1L133.1%2C23c7.2-7.2%2C18.9-7.2%2C26.1%2C0l126%2C126c7.2%2C7.2%2C7.2%2C18.9%2C0%2C26.1C305.9%2C204.8%2C294.2%2C204.8%2C287%2C197.6z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px;
     cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* --- Chat Box --- */
+#ai-model-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+
+/* --- Style untuk tombol Hapus Riwayat --- */
+#clear-history-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* position: absolute; /* Hapus ini jika ingin tetap dalam flow */
+    /* bottom: 20px; /* Hapus ini jika ingin tetap dalam flow */
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
+}
+
+#clear-history-btn:hover {
+    background-color: #e60000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#clear-history-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* --- Chat Container --- */
+.chat-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: #fff;
+    border-bottom: 1px solid #eef;
+}
+
+.header-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.header-info h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.header-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #66cdaa;
+}
+
 .chat-box {
     flex-grow: 1;
     padding: 25px;
@@ -251,7 +209,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    background-color: transparent;
+    background-color: #f9fafb;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d1d1 transparent;
 }
 
 .message-row {
@@ -261,8 +221,14 @@ body {
     max-width: 80%;
 }
 
-.message-row.bot { align-self: flex-start; }
-.message-row.user { align-self: flex-end; flex-direction: row-reverse; }
+.message-row.bot {
+    align-self: flex-start;
+}
+
+.message-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
 
 .avatar {
     width: 35px;
@@ -275,102 +241,316 @@ body {
     border-radius: 18px;
     font-size: 15px;
     line-height: 1.5;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .chat-message.bot {
-    background: linear-gradient(135deg, var(--secondary-glow), #8a2be2);
-    color: #fff;
+    background-color: #e3e9f3;
+    color: #333;
     border-bottom-left-radius: 5px;
 }
 
 .chat-message.user {
-    background: linear-gradient(135deg, var(--primary-glow), #007bff);
+    background: linear-gradient(135deg, #0d6efd, #0d9afd);
     color: white;
     border-bottom-right-radius: 5px;
 }
 
-.chat-message p { margin: 0; }
-
-/* --- Chat Input --- */
-.chat-input-area {
-    padding: 15px 20px;
-    border-top: 1px solid var(--border-color);
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.input-wrapper {
+/* MODIFIKASI: Penambahan style untuk file */
+.chat-message.file-info {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
-.upload-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 50%;
-    transition: all 0.3s;
+.chat-message.file-info i {
+    font-size: 24px;
 }
 
-.upload-btn:hover {
-    color: var(--primary-glow);
-    background-color: rgba(0, 217, 255, 0.1);
+/* --- Style untuk Area Input yang Diperbarui --- */
+.chat-input-area {
+    display: flex; /* Ubah kembali ke flex untuk kontrol yang lebih baik */
+    flex-direction: column; /* Mengubah arah agar pratinjau bisa di atas */
+    align-items: stretch;
+    padding: 15px 20px;
+    border-top: 1px solid #eef;
+    background-color: #fff;
+    gap: 10px; /* Menambah jarak antar elemen */
+}
+
+.input-wrapper { /* Pembungkus baru untuk input dan tombol upload/send */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
 }
 
 #user-input {
     flex-grow: 1;
     border: none;
-    background-color: var(--dark-bg-2);
+    background-color: #f1f3f5;
     border-radius: 25px;
     padding: 12px 20px;
     font-size: 15px;
     font-family: 'Poppins', sans-serif;
-    color: var(--text-primary);
-    border: 1px solid transparent;
-    transition: all 0.3s;
 }
 
 #user-input:focus {
     outline: none;
-    border-color: var(--primary-glow);
-    box-shadow: 0 0 10px var(--primary-glow);
+    box-shadow: 0 0 0 2px #0d6efd40;
+}
+
+/* TAMBAHAN: Style untuk Tombol Upload */
+.upload-btn {
+    background-color: transparent;
+    border: none;
+    color: #555;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #f1f3f5;
+    color: #0d6efd;
 }
 
 #send-btn {
-    background: var(--primary-glow);
-    color: var(--dark-bg-1);
+    background-color: #0d6efd;
+    color: white;
     border: none;
     width: 45px;
     height: 45px;
     border-radius: 50%;
+    /* margin-left: 5px; */ /* Dihapus karena sudah ada gap di input-wrapper */
     cursor: pointer;
     font-size: 18px;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s;
+    transition: background-color 0.2s;
 }
 
 #send-btn:hover {
-    box-shadow: 0 0 15px var(--primary-glow);
-    transform: scale(1.1);
+    background-color: #0b5ed7;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
+/* --- Style untuk Pratinjau File --- */
+#file-preview-container {
+    padding: 0 0 10px 0; /* Sesuaikan padding untuk di atas input */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Agar preview bisa ke baris baru jika banyak */
+}
+
+.file-preview-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f1f3f5;
+}
+
+.file-preview-item img {
+    max-width: 60px; /* Dikecilkan sedikit */
+    max-height: 60px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.file-preview-item p {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px; /* Batasi lebar teks nama file */
+}
+
+.remove-file-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Style untuk Sematan Video YouTube --- */
+.youtube-embed-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; 
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 10px;
+    background-color: #000;
+}
+
+.youtube-embed-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* BARU: Gaya untuk gambar di dalam pesan chat */
+.chat-message img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+    margin-top: 5px;
+}
+
+/* BARU: Gaya khusus untuk pesan yang sebagian besar berisi gambar */
+.chat-message.image-only {
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* BARU: Wadah untuk gambar di dalam gelembung chat agar terpusat */
+.chat-message .image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* Memastikan pratinjau file untuk dokumen juga terlihat bagus */
+.sent-file-preview-doc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    margin-top: 5px;
+    word-break: break-all;
+    max-width: 250px; /* Batasi lebar agar tidak terlalu panjang */
+}
+
+.sent-file-preview-doc i {
+    font-size: 20px;
+    color: #555;
+}
+
+.sent-file-preview-doc span {
+    font-size: 14px;
+    color: #333;
+}
+
+
+/* ======================================= */
+/* --- MODE RESPONSIVE UNTUK PONSEL --- */
+/* ======================================= */
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        padding: 10px; /* Tambahkan padding agar tidak terlalu mepet tepi */
+    }
+
+    .main-wrapper {
+        flex-direction: column; /* Mengaktifkan kembali flex-direction: column untuk tampilan HP */
+        width: 100%; /* Gunakan 100% agar responsif */
+        height: auto;
+        min-height: 100vh;
+        border-radius: 0;
+        min-width: unset;
+        box-shadow: none;
+        border: none;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%; /* Atur lebar 100% untuk sidebar di mode ponsel */
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #eef;
+        flex-shrink: 0;
+        padding: 15px;
+    }
+
+    .sidebar ul {
+        max-height: 200px; /* Batasi tinggi riwayat chat di HP */
+        overflow-y: auto;
+    }
+
+    .chat-box {
+        padding: 15px; /* Kurangi padding di chat-box untuk HP */
+    }
+
+    .message-row {
+        max-width: 95%; /* Tingkatkan lebar pesan di HP */
+    }
+
+    .chat-input-area {
+        padding: 10px; /* Kurangi padding input area di HP */
+    }
+
+    #user-input {
+        padding: 10px 15px; /* Sesuaikan padding input di HP */
+        font-size: 14px;
+    }
+
+    .upload-btn, #send-btn {
+        width: 40px; /* Sedikit dikecilkan tombol di HP */
+        height: 40px;
+        font-size: 16px;
+    }
+
+    #file-preview-container {
+        padding: 5px 0; /* Sesuaikan padding preview di HP */
+        justify-content: center; /* Pusatkan preview di HP */
+    }
+
+    .file-preview-item img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+}
+
+/* Scrollbar Styles for Webkit (Chrome, Safari) */
+.chat-box::-webkit-scrollbar,
+.sidebar ul::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
-::-webkit-scrollbar-track {
-    background: transparent;
+
+.chat-box::-webkit-scrollbar-track,
+.sidebar ul::-webkit-scrollbar-track {
+    background: transparent; /* Ubah ke transparan */
 }
-::-webkit-scrollbar-thumb {
-    background: var(--primary-glow);
-    border-radius: 4px;
+
+.chat-box::-webkit-scrollbar-thumb,
+.sidebar ul::-webkit-scrollbar-thumb {
+    background-color: #d1d1d1;
+    border-radius: 10px;
+    border: 2px solid transparent;
 }
-::-webkit-scrollbar-thumb:hover {
-    background: #00ffff;
+
+.chat-box::-webkit-scrollbar-thumb:hover,
+.sidebar ul::-webkit-scrollbar-thumb:hover {
+    background-color: #b0b0b0;
 }
