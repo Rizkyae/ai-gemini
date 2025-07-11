@@ -16,10 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const filePreviewContainer = document.getElementById('file-preview-container');
     const aiModelSelect = document.getElementById('ai-model-select');
 
-
     // --- Pengaturan API ---
     // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
-    const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
+    const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC2CyFXUMg0e_yajv4'; // Ganti dengan API Key Anda yang valid
     let currentModel = aiModelSelect.value; 
 
     // --- State Management ---
@@ -34,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chats = JSON.parse(savedChats);
         }
         if (chats.length > 0) {
+            // Pastikan currentChatId selalu mengarah ke chat yang ada
             currentChatId = chats[0].id;
         } else {
             startNewChat();
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     currentChatId = chat.id;
                     renderChatBox();
-                    renderHistory();
+                    renderHistory(); // Render ulang riwayat untuk mengupdate kelas aktif
                 });
                 li.appendChild(a);
                 historyList.appendChild(li);
@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderChatBox() {
         chatBox.innerHTML = '';
         const currentChat = chats.find(c => c.id === currentChatId);
+        
+        // Pesan awal ketika chat baru atau kosong
         if (!currentChat || currentChat.messages.length === 0) {
              const initialMessageRow = document.createElement('div');
              initialMessageRow.classList.add('message-row', 'bot');
@@ -92,9 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentChat && currentChat.messages) {
             currentChat.messages.forEach(msg => {
-                addMessageToDOM(msg.content, msg.sender, msg.type, msg.filePreview, msg.fileObject, msg.aiImageURL); // Tambahkan aiImageURL
+                // Pastikan semua properti yang relevan diteruskan
+                addMessageToDOM(msg.content, msg.sender, msg.type, msg.filePreview, msg.fileObject, msg.aiImageURL);
             });
         }
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll ke bawah setelah render
     }
 
     function startNewChat() {
@@ -104,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Chat Baru',
             messages: []
         };
-        chats.unshift(newChat);
+        chats.unshift(newChat); // Tambahkan ke awal array agar muncul di atas
         currentChatId = newChatId;
         userInput.value = '';
         clearFilePreview();
@@ -113,23 +117,34 @@ document.addEventListener('DOMContentLoaded', () => {
         saveChats();
     }
 
-    // Perbarui fungsi untuk menerima aiImageURL
     function addMessageToData(content, sender, type = 'text', filePreview = null, fileObject = null, aiImageURL = null) {
         let currentChat = chats.find(c => c.id === currentChatId);
         if (!currentChat) {
+            // Ini seharusnya tidak terjadi jika startNewChat() dipanggil dengan benar
+            // Tapi sebagai fallback, mulai chat baru
             startNewChat();
             currentChat = chats.find(c => c.id === currentChatId);
         }
+        
+        // Pastikan tidak menyimpan 'lagi mikir bentar...' ke dalam riwayat permanen
+        if (sender === 'bot' && content === "lagi mikir bentar...") {
+            return; 
+        }
+
         currentChat.messages.push({
             sender,
             content,
             type,
             filePreview,
-            fileObject,
-            aiImageURL // Simpan URL gambar AI jika ada
+            fileObject: fileObject ? { // Hanya simpan data penting dari fileObject
+                name: fileObject.name,
+                mimeType: fileObject.mimeType,
+                base64: fileObject.base64
+            } : null,
+            aiImageURL
         });
 
-        if (currentChat.messages.length === 1) {
+        if (currentChat.messages.length === 1 && sender === 'user') { // Hanya ubah judul jika pesan pertama dari user
             currentChat.title = content ? (content.substring(0, 30) + (content.length > 30 ? '...' : '')) : (fileObject ? `File: ${fileObject.name.substring(0, 20)}...` : 'Chat Baru');
             renderHistory();
         }
@@ -139,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearFilePreview() {
         attachedFile = null;
         filePreviewContainer.innerHTML = '';
+        docInput.value = ''; // Reset input file agar bisa upload file yang sama lagi
+        imageInput.value = ''; // Reset input file gambar
     }
 
     function renderFilePreview(fileData) {
@@ -146,13 +163,20 @@ document.addEventListener('DOMContentLoaded', () => {
         attachedFile = fileData;
         const previewWrapper = document.createElement('div');
         previewWrapper.className = 'file-preview-item';
+
         if (fileData.mimeType.startsWith('image/')) {
             const img = document.createElement('img');
             img.src = `data:${fileData.mimeType};base64,${fileData.base64}`;
             previewWrapper.appendChild(img);
         } else {
-            previewWrapper.innerHTML = `<i class="fas fa-file-alt" style="font-size: 40px; color: #888;"></i><p style="margin:0 10px;">${fileData.name}</p>`;
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-file-alt'; // Icon untuk dokumen
+            const fileNameSpan = document.createElement('p');
+            fileNameSpan.textContent = fileData.name;
+            previewWrapper.appendChild(icon);
+            previewWrapper.appendChild(fileNameSpan);
         }
+        
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-file-btn';
         removeBtn.innerHTML = '×';
@@ -164,10 +188,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFileSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            alert("Ukuran file terlalu besar! Maksimal 5MB.");
+
+        // Batasi ukuran file hingga 5MB
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+        if (file.size > MAX_FILE_SIZE) {
+            alert(`Ukuran file terlalu besar! Maksimal ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
+            event.target.value = ''; // Clear the input
             return;
         }
+
         const reader = new FileReader();
         reader.onloadend = () => {
             const base64String = reader.result.split(',')[1];
@@ -178,14 +207,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
         reader.readAsDataURL(file);
-        event.target.value = '';
+        // event.target.value = ''; // Jangan clear di sini, clear di clearFilePreview()
     }
 
     // --- FUNGSI BARU DAN FUNGSI YANG DIPERBARUI ---
 
-    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; 
+    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; // Ganti dengan API Key YouTube Anda jika diperlukan
 
     async function getYouTubeVideoDetails(videoId) {
+        if (!youtubeApiKey) {
+            console.warn("YouTube API Key tidak ditemukan. Detail video YouTube tidak dapat diambil.");
+            return null;
+        }
         try {
             const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${youtubeApiKey}`);
             if (!response.ok) {
@@ -210,8 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function embedYouTubeLinks(text) {
-        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
+        // Regex yang lebih robust untuk menangani berbagai format URL YouTube
+        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|live\/)|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{11})(?:\S+)?/g;
         return text.replace(youtubeRegex, (match, videoId) => {
+            // Gunakan domain yang benar untuk iframe YouTube
             return `<div class="youtube-embed-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
         });
     }
@@ -240,13 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let contentHTML = '';
 
         // Logika untuk menampilkan pratinjau file yang dikirim oleh USER
-        if (filePreviewUrl && sender === 'user') { // Hanya tampilkan file preview untuk pengirim user
-            let isImage = false;
-            if (fileObject) {
-                isImage = fileObject.mimeType.startsWith('image/');
-            } else {
-                isImage = filePreviewUrl.startsWith('data:image/');
-            }
+        if (filePreviewUrl && sender === 'user') {
+            let isImage = fileObject ? fileObject.mimeType.startsWith('image/') : filePreviewUrl.startsWith('data:image/');
 
             if (isImage) {
                 contentHTML += `<div class="sent-file-preview"><img src="${filePreviewUrl}" alt="Pratinjau Gambar"></div>`;
@@ -258,12 +288,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Logika untuk menampilkan gambar yang dikirim oleh AI
         if (aiImageURL && sender === 'bot') {
+            // Tambahkan kelas image-only jika hanya ada gambar
+            if (!message || message.trim() === '') {
+                chatMessage.classList.add('image-only');
+            }
             contentHTML += `<div class="ai-image-response"><img src="${aiImageURL}" alt="Gambar dari AI"></div>`;
         }
 
         // Menambahkan teks pesan (pastikan ini di bawah gambar jika ada)
         if (message) {
             const processedMessage = embedYouTubeLinks(message);
+            // marked.parse akan mengonversi Markdown ke HTML
             contentHTML += marked.parse(processedMessage);
         }
 
@@ -279,13 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let modelToUse;
         if (currentModel === 'gen-z') {
             modelToUse = 'gemini-1.5-flash'; // Menggunakan flash untuk kecepatan
-            console.log("Menggunakan model untuk Gen Z:", modelToUse);
         } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-2.5-flash';
-            console.log("Menggunakan model untuk Normal AI:", modelToUse);
+            modelToUse = 'gemini-1.5-flash'; // Menggunakan flash juga untuk normal, bisa ganti ke 'gemini-1.5-pro' jika mau yang lebih powerful tapi mungkin lebih lambat/mahal
         } else {
-            modelToUse = 'gemini-pro';
-            console.log("Menggunakan model default:", modelToUse);
+            modelToUse = 'gemini-1.5-flash'; // Default ke flash
         }
 
         try {
@@ -295,13 +327,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    "contents": conversationParts 
+                    "contents": conversationParts,
+                    "safetySettings": [ // Tambahkan safety settings
+                        {
+                            "category": "HARM_CATEGORY_HARASSMENT",
+                            "threshold": "BLOCK_NONE"
+                        },
+                        {
+                            "category": "HARM_CATEGORY_HATE_SPEECH",
+                            "threshold": "BLOCK_NONE"
+                        },
+                        {
+                            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                            "threshold": "BLOCK_NONE"
+                        },
+                        {
+                            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                            "threshold": "BLOCK_NONE"
+                        }
+                    ]
                 })
             });
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("API Error Response:", errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // Menangani error spesifik dari Gemini API
+                if (errorData && errorData.error && errorData.error.message.includes("candidate was blocked due to safety settings")) {
+                    return "Maaf, respons ini diblokir karena melanggar kebijakan keselamatan saya. Coba pertanyaan lain ya.";
+                }
+                throw new Error(`HTTP error! status: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
             }
             const data = await response.json();
             if (data.candidates && data.candidates.length > 0) {
@@ -312,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return "Maaf, saya tidak dapat memberikan respons yang valid.";
         } catch (error) {
             console.error("Error fetching AI response:", error);
-            return "Waduh, sorry banget bro. Gagal nyambung nih, coba ganti model AI";
+            return `Waduh, sorry banget bro. Gagal nyambung nih, coba ganti model AI atau cek koneksi internetmu. Detail Error: ${error.message}`;
         }
     }
 
@@ -325,41 +379,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
+        // Tambahkan pesan pengguna ke DOM dan Data
         addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
-        addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+        addMessageToData(userMessage, 'user', 'text', attachedFile ? attachedFile.base64 : null, attachedFile);
+
 
         userInput.value = '';
         clearFilePreview();
 
-        addMessageToDOM("lagi mikir bentar...", 'bot');
+        // Tampilkan pesan "lagi mikir bentar..." sementara menunggu respons AI
+        const thinkingMessageDom = document.createElement('div');
+        thinkingMessageDom.classList.add('message-row', 'bot');
+        thinkingMessageDom.innerHTML = `<img src="anim.gif" alt="AI Avatar" class="avatar"><div class="chat-message bot">lagi mikir bentar...</div>`;
+        chatBox.appendChild(thinkingMessageDom);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
         const currentChat = chats.find(c => c.id === currentChatId);
         const conversationHistoryForAPI = [];
 
         let personaPrompt = '';
-        console.log("Current Model Selected:", currentModel);
         if (currentModel === 'gen-z') {
-            personaPrompt = `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Nih, bestie, ada gambar bagus buat kamu! [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
+            personaPrompt = `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind. Jika diminta 'berikan gambar' atau 'tunjukkan foto', respons dengan teks dan URL gambar placeholder yang realistis seperti dari Unsplash atau Placehold.co, contohnya: 'Nih, bestie, ada gambar bagus buat kamu! [GAMBAR: https://images.unsplash.com/photo-1682687982046-e59a43521d9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1ODc1NTd8MXwxfGFsbHwxfHx8fHwyfHwxNjk5MjI3Mjc3fA&ixlib=rb-4.0.3&q=80&w=400]'.`;
         } else if (currentModel === 'normal') {
-            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Be polite, formal where appropriate, and do not use slang or emojis unless explicitly asked. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Baik, ini adalah contoh gambar yang saya temukan: [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
+            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Be polite, formal where appropriate, and do not use slang or emojis unless explicitly asked. Always keep the previous conversation in mind. Jika diminta 'berikan gambar' atau 'tunjukkan foto', respons dengan teks dan URL gambar placeholder yang realistis seperti dari Unsplash atau Placehold.co, contohnya: 'Baik, ini adalah contoh gambar yang saya temukan: [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
         }
-        console.log("Persona Prompt Generated:", personaPrompt);
         
+        // Tambahkan prompt persona sebagai pesan sistem atau pesan pertama
         if (personaPrompt) {
             conversationHistoryForAPI.push({
                 "role": "user",
                 "parts": [{ "text": personaPrompt }]
             });
+            // Tambahkan juga respons 'model' dummy agar percakapan berlanjut dengan persona yang sudah diatur
+            conversationHistoryForAPI.push({
+                "role": "model",
+                "parts": [{ "text": "Oke, saya siap membantu!" }] // Atau respons awal dari AI
+            });
         }
 
         const MAX_HISTORY_MESSAGES = 10;
-        const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
+        // Ambil pesan asli dari chat, filter pesan "lagi mikir bentar..."
+        const actualMessages = currentChat.messages.filter(msg => !(msg.sender === 'bot' && msg.content === "lagi mikir bentar..."));
+        const messagesToSend = actualMessages.slice(-MAX_HISTORY_MESSAGES);
 
         for (const msg of messagesToSend) {
             const contentParts = [];
             let processedText = msg.content; 
 
-            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
+            // Proses URL YouTube jika ada
+            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|live\/)|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{11})(?:\S+)?/g;
             const matches = [...(msg.content || '').matchAll(youtubeRegex)]; 
 
             if (matches.length > 0) {
@@ -375,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (processedText) {
                 contentParts.push({ "text": processedText });
             }
-            if (msg.fileObject) {
+            if (msg.fileObject && msg.fileObject.base64 && msg.fileObject.mimeType) {
                 contentParts.push({
                     "inline_data": {
                         "mime_type": msg.fileObject.mimeType,
@@ -391,15 +459,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-
+        
         const aiRawResponse = await getAIResponse(conversationHistoryForAPI);
 
-        // Hapus pesan "lagi mikir bentar..."
-        if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message') && chatBox.lastChild.querySelector('.chat-message').textContent === "lagi mikir bentar...") {
+        // Hapus pesan "lagi mikir bentar..." dari DOM
+        if (chatBox.lastChild === thinkingMessageDom) {
             chatBox.removeChild(chatBox.lastChild);
         }
         
-        // Cek lagi untuk kasus "edit foto" atau "ganti background" setelah mendapatkan respons AI
+        // Cek lagi untuk kasus "edit foto" atau "ganti background"
         if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
              const staticMessage = "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
              addMessageToDOM(staticMessage, 'bot');
@@ -410,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Logika untuk mendeteksi dan menampilkan gambar dari respons AI ---
         let finalAIMessage = aiRawResponse;
         let aiImageURL = null;
-        const imagePattern = /\[GAMBAR:\s*(https?:\/\/[^\s\]]+\.(?:png|jpe?g|gif|webp|svg))\]/i;
+        const imagePattern = /\[GAMBAR:\s*(https?:\/\/[^\s\]]+\.(?:png|jpe?g|gif|webp|svg|bmp)(?:\?\S*)?)\]/i; // Regex lebih baik untuk URL
         const match = aiRawResponse.match(imagePattern);
 
         if (match && match[1]) {
@@ -426,7 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
     sendButton.addEventListener('click', handleSend);
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSend();
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Mencegah newline di textarea
+            handleSend();
+        }
     });
     newChatBtn.addEventListener('click', startNewChat);
     uploadDocBtn.addEventListener('click', () => docInput.click());
@@ -447,6 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
     aiModelSelect.addEventListener('change', (e) => {
         currentModel = e.target.value;
         console.log(`Model AI diubah menjadi: ${currentModel}`);
+        // Anda bisa menambahkan pesan di chatbox bahwa model telah berubah
+        // addMessageToDOM(`Model AI telah diubah menjadi "${currentModel === 'gen-z' ? 'Mas Riski (Gen Z)' : 'Mas Riski (Normal AI)'}".`, 'bot');
     });
 
     // --- Inisialisasi Aplikasi ---
