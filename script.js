@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
     const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
     // let currentModel = aiModelSelect ? aiModelSelect.value : 'gemini-pro'; // Sesuaikan jika aiModelSelect tidak ada
-    let currentModel = 'gemini-pro'; // Default ke gemini-pro jika tidak ada pilihan model
+    let currentModel = 'gemini-2.5-flash'; // Default ke gemini-pro jika tidak ada pilihan model
 
     // --- State Management ---
     let chats = [];
