@@ -535,7 +535,13 @@ body {
     display: block;  /* Mencegah spasi ekstra di bawah gambar */
     margin-top: 5px; /* Menambahkan sedikit jarak jika ada teks di atas gambar dalam gelembung yang sama */
 }
-
+.message-time {
+    display: block;
+    font-size: 0.75em;
+    color: #999;
+    text-align: right;
+    margin-top: 5px;
+}
 /* BARU: Gaya khusus untuk pesan yang sebagian besar berisi gambar */
 .chat-message.image-only {
     padding: 5px; /* Mengurangi padding untuk pesan yang fokus pada gambar */
@@ -585,3 +591,4 @@ body {
     transform: translateY(0);
     box-shadow: none;
 }
+
