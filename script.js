@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentChat && currentChat.messages) {
             currentChat.messages.forEach(msg => {
-                addMessageToDOM(msg.content, msg.sender, msg.type, msg.filePreview, msg.fileObject, msg.aiImageURL); // Tambahkan aiImageURL
+                addMessageToDOM(msg.content, msg.sender, msg.type, msg.filePreview, msg.fileObject, msg.aiImageURL, msg.timestamp); // Tambahkan aiImageURL
             });
         }
     }
@@ -119,6 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
             startNewChat();
             currentChat = chats.find(c => c.id === currentChatId);
         }
+        
+        currentChat.messages.push({
+        sender,
+        content,
+        type,
+        filePreview,
+        fileObject,
+        aiImageURL,
+        timestamp: new Date().toISOString() // Tambahkan baris ini
+    });
+        
         currentChat.messages.push({
             sender,
             content,
@@ -219,9 +230,21 @@ document.addEventListener('DOMContentLoaded', () => {
      * FUNGSI DIPERBAIKI: `addMessageToDOM` sekarang sudah benar dan dapat menampilkan gambar AI.
      */
     function addMessageToDOM(message, sender, type = 'text', filePreviewUrl = null, fileObject = null, aiImageURL = null) {
+    const timeStamp = document.createElement('span');
+    // Jika timestamp sudah ada, gunakan timestamp tersebut. Jika tidak, buat yang baru.
+    const messageDate = timestamp ? new Date(timestamp) : new Date();
+    timeStamp.classList.add('message-time');
+    timeStamp.textContent = messageDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    chatMessage.appendChild(timeStamp);
         const messageRow = document.createElement('div');
         messageRow.classList.add('message-row', sender);
-
+        
+       const timeStamp = document.createElement('span');
+       const now = new Date();
+       timeStamp.classList.add('message-time');
+       timeStamp.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+       chatMessage.appendChild(timeStamp);
+        
         const avatar = document.createElement('img');
         if (sender === 'bot') {
             avatar.src = 'anim.gif';
@@ -324,7 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
-        addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+        // addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
+        addMessageToDOM(finalAIMessage, 'bot', 'text', null, null, aiImageURL, new Date().toISOString());
         addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile);
 
         userInput.value = '';
@@ -434,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     docInput.addEventListener('change', handleFileSelect);
 
     clearHistoryBtn.addEventListener('click', () => {
-        if (confirm("Ah, Yang bener aja lu BANGSATTT!")) {
+        if (confirm("Apakah anda yakin ingin menghapus pesan ini?!")) {
             chats = [];
             localStorage.removeItem('ai-chat-history');
             currentChatId = null;
