@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getAIResponse(conversationParts) { 
         let modelToUse;
         if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-1.5-flash'; 
+            modelToUse = 'gemini-2.5-pro'; 
         } else if (currentModel === 'normal') {
             modelToUse = 'gemini-2.5-flash';
         } else {
