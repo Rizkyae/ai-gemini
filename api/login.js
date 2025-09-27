@@ -41,7 +41,7 @@ signInButton.addEventListener('click', () => {
         
         // Buat token JWT jika login berhasil
         // PENTING: Ganti 'YOUR_SECRET_KEY' dengan kunci rahasia Anda sendiri di Vercel Environment Variables
-        const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id, email: user.email }, process.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Login successful', token });
 
