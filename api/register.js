@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { sql } from '@vercel/postgres';
 import bcrypt from 'bcryptjs';
 
