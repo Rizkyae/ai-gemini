@@ -1,8 +1,0 @@
-{
-  "name": "rizky-ai",
-  "version": "1.0.0",
-  "dependencies": {
-    "@vercel/postgres": "^0.5.1",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2"
-  }
