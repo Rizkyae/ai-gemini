@@ -3,6 +3,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- Elemen DOM ---
+    const token = localStorage.getItem('user_token');
+    if (!token) {
+        alert('Anda harus login terlebih dahulu!');
+        window.location.href = '/login.html';
+        return; 
+    }
     const sendButton = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
