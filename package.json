@@ -1,20 +1,8 @@
-<<<<<<< HEAD
 {
-  "name": "ai-mas-riski",
+  "name": "rizky-ai",
   "version": "1.0.0",
   "dependencies": {
     "@vercel/postgres": "^0.5.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2"
   }
-=======
-{
-  "name": "ai-mas-riski",
-  "version": "1.0.0",
-  "dependencies": {
-    "@vercel/postgres": "^0.5.1",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2"
-  }
->>>>>>> f51e731bc0639ac2a4bf661879438523c3c5a81f
-}
