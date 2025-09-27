@@ -41,6 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    loginBtn.addEventListener('click', () => handleAuth('/api/login'));
+    loginBtn.addEventListener('click', () => handleAuth('/api/masuk'));
     registerBtn.addEventListener('click', () => handleAuth('/api/register'));
 });
