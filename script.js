@@ -1,7 +1,6 @@
-// script.js (Tanpa Sesi Login - Langsung Chat)
+// script.js (Versi Groq AI - Tanpa Login)
 document.addEventListener('DOMContentLoaded', () => {
-    // BAGIAN LOGIN DIHAPUS: Pengguna sekarang langsung masuk ke logika aplikasi utama.
-
+    
     // --- Elemen DOM ---
     const sendButton = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
@@ -16,10 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const filePreviewContainer = document.getElementById('file-preview-container');
     const aiModelSelect = document.getElementById('ai-model-select');
 
-    // --- Pengaturan API ---
-    // PASTIKAN INI API KEY GEMINI ANDA YANG VALID. JANGAN MEMBAGIKAN KEY INI SECARA PUBLIK.
-    const apiKey = 'AIzaSyBco_NWz7SagOZ2YMC7CyFXUMg0e_yajv4'; 
-    let currentModel = aiModelSelect ? aiModelSelect.value : 'gen-z'; // Fallback jika select belum load
+    // --- PENGATURAN API GROQ ---
+    // !!! PENTING: Ganti dengan API Key Groq Anda dari console.groq.com !!!
+    const apiKey = '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'; 
+
+    let currentModel = aiModelSelect ? aiModelSelect.value : 'gen-z';
 
     // --- State Management ---
     let chats = [];
@@ -77,14 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
              initialMessageRow.classList.add('message-row', 'bot');
 
              const initialAvatar = document.createElement('img');
-             initialAvatar.src = 'anim.gif';
+             initialAvatar.src = 'anim.gif'; // Pastikan file ini ada
              initialAvatar.alt = 'AI Avatar';
              initialAvatar.classList.add('avatar');
              initialMessageRow.appendChild(initialAvatar);
 
              const initialChatMessage = document.createElement('div');
              initialChatMessage.classList.add('chat-message', 'bot');
-             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Anda bisa bertanya atau mengirimkan file kepada saya.</p>';
+             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski (via Groq AI). Mau ngobrol apa hari ini?</p>';
              initialMessageRow.appendChild(initialChatMessage);
              chatBox.appendChild(initialMessageRow);
         }
@@ -164,8 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFileSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
-            alert("Ukuran file terlalu besar! Maksimal 5MB.");
+        
+        // Validasi Ukuran File (Max 4MB untuk Base64 aman)
+        if (file.size > 4 * 1024 * 1024) { 
+            alert("Ukuran file terlalu besar! Maksimal 4MB untuk Groq Vision.");
             return;
         }
         const reader = new FileReader();
@@ -181,30 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = '';
     }
 
-    // --- FUNGSI BARU DAN FUNGSI YANG DIPERBARUI ---
-
-    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; 
+    // --- FUNGSI UTILS ---
+    const youtubeApiKey = 'AIzaSyC6Fl1VhgNkqlPr3nN17XRBzFv6ZHptiBw'; // Biarkan YouTube API Key tetap
 
     async function getYouTubeVideoDetails(videoId) {
         try {
             const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${youtubeApiKey}`);
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("YouTube API Error Response:", errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) return null;
             const data = await response.json();
             if (data.items && data.items.length > 0) {
                 const snippet = data.items[0].snippet;
                 return {
                     title: snippet.title,
-                    description: snippet.description,
-                    tags: snippet.tags
+                    description: snippet.description
                 };
             }
             return null;
         } catch (error) {
-            console.error("Error fetching YouTube video details:", error);
+            console.error("YouTube Error:", error);
             return null;
         }
     }
@@ -212,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function embedYouTubeLinks(text) {
         const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
         return text.replace(youtubeRegex, (match, videoId) => {
-            return `<div class="youtube-embed-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+            return `<div class="youtube-embed-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
         });
     }
 
@@ -221,13 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageRow.classList.add('message-row', sender);
 
         const avatar = document.createElement('img');
-        if (sender === 'bot') {
-            avatar.src = 'anim.gif';
-            avatar.alt = 'AI Avatar';
-        } else {
-            avatar.src = 'user.gif';
-            avatar.alt = 'User Avatar';
-        }
+        avatar.src = sender === 'bot' ? 'anim.gif' : 'user.gif';
+        avatar.alt = sender + ' Avatar';
         avatar.classList.add('avatar');
         messageRow.appendChild(avatar);
 
@@ -249,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (message) {
             const processedMessage = embedYouTubeLinks(message);
-            // Pastikan library marked.js sudah dimuat di HTML Anda
             if (typeof marked !== 'undefined') {
                 contentHTML += marked.parse(processedMessage);
             } else {
@@ -270,41 +260,55 @@ document.addEventListener('DOMContentLoaded', () => {
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    async function getAIResponse(conversationParts) { 
+    // --- FUNGSI UTAMA AI (GROQ) ---
+
+    async function getAIResponse(messages, hasImage = false) { 
         let modelToUse;
-        if (currentModel === 'gen-z') {
-            modelToUse = 'gemini-2.0-flash'; // Menggunakan model terbaru yang lebih cepat
-        } else if (currentModel === 'normal') {
-            modelToUse = 'gemini-1.5-flash';
+
+        // Logika Pemilihan Model Groq
+        if (hasImage) {
+            // Jika ada gambar, WAJIB pakai model Vision
+            modelToUse = 'llama-3.2-90b-vision-preview'; 
         } else {
-            modelToUse = 'gemini-pro';
+            // Jika teks saja, sesuaikan dengan pilihan user
+            if (currentModel === 'gen-z') {
+                modelToUse = 'llama-3.3-70b-versatile'; // Model paling seimbang & pintar
+            } else if (currentModel === 'normal') {
+                modelToUse = 'llama3-8b-8192'; // Sangat cepat
+            } else {
+                modelToUse = 'llama-3.3-70b-versatile';
+            }
         }
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${apiKey}`, {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}` // Menggunakan Bearer Token untuk Groq
                 },
                 body: JSON.stringify({
-                    "contents": conversationParts 
+                    "messages": messages,
+                    "model": modelToUse,
+                    "temperature": 0.7,
+                    "max_tokens": 1024
                 })
             });
+
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("API Error Response:", errorData);
+                console.error("Groq API Error:", errorData);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+
             const data = await response.json();
-            if (data.candidates && data.candidates.length > 0) {
-                if (data.candidates[0].content.parts[0].text) {
-                    return data.candidates[0].content.parts[0].text.trim();
-                }
+            if (data.choices && data.choices.length > 0) {
+                return data.choices[0].message.content.trim();
             }
-            return "Maaf, saya tidak dapat memberikan respons yang valid.";
+            return "Maaf, tidak ada respons dari Groq.";
         } catch (error) {
             console.error("Error fetching AI response:", error);
-            return "Waduh, sorry banget bro. Gagal nyambung nih, coba ganti model AI";
+            return "Waduh, koneksi ke Groq gagal nih. Cek API Key atau koneksi internetmu.";
         }
     }
 
@@ -312,107 +316,108 @@ document.addEventListener('DOMContentLoaded', () => {
         const userMessage = userInput.value.trim();
         if (userMessage === '' && !attachedFile) return;
 
-        if (currentChatId === null) {
-            startNewChat();
-        }
+        if (currentChatId === null) startNewChat();
         
         const filePreviewForDOM = attachedFile ? `data:${attachedFile.mimeType};base64,${attachedFile.base64}` : null;
-        
-        // --- 1. Tambahkan pesan pengguna ke data dan DOM dengan timestamp ---
         const userTimestamp = new Date().toISOString();
+
+        // 1. Tampilkan pesan user
         addMessageToData(userMessage, 'user', 'text', filePreviewForDOM, attachedFile, null, userTimestamp);
         addMessageToDOM(userMessage, 'user', 'text', filePreviewForDOM, attachedFile, null, userTimestamp);
 
         userInput.value = '';
         clearFilePreview();
 
-        // --- 2. Tampilkan pesan loading ---
-        const thinkingMessage = "lagi mikir bentar...";
+        // 2. Loading...
+        const thinkingMessage = "Lagi mikir bentar...";
         addMessageToDOM(thinkingMessage, 'bot');
 
+        // 3. Persiapkan History untuk API Groq
         const currentChat = chats.find(c => c.id === currentChatId);
         const conversationHistoryForAPI = [];
 
-        let personaPrompt = '';
+        // System Prompt (Persona)
+        let systemContent = '';
         if (currentModel === 'gen-z') {
-            personaPrompt = `React as Riski, your AI bestie. Your personality is super chill, helpful, and you talk like a true Gen Z from Indonesia. Use casual Indonesian and mix in English slang (e.g., 'literally', 'spill', 'no cap', 'YGY', 'bestie'). Use emojis. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Nih, bestie, ada gambar bagus buat kamu! [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
-        } else if (currentModel === 'normal') {
-            personaPrompt = `You are Mas Riski, a helpful and friendly AI assistant. Respond in clear, concise, and polite Indonesian. Be polite, formal where appropriate, and do not use slang or emojis unless explicitly asked. Always keep the previous conversation in mind. Jika diminta 'berikan gambar', respons dengan teks dan URL gambar placeholder, contohnya: 'Baik, ini adalah contoh gambar yang saya temukan: [GAMBAR: https://placehold.co/400x300.png?text=Contoh+Gambar+AI]'.`;
+            systemContent = `You are Riski, a Gen Z AI assistant from Indonesia. Speak Indonesian with slang like 'literally', 'bestie', 'jujurly'. Be helpful but super chill.`;
+        } else {
+            systemContent = `You are Mas Riski, a helpful and polite Indonesian AI assistant.`;
         }
         
-        if (personaPrompt) {
-            conversationHistoryForAPI.push({
-                "role": "user",
-                "parts": [{ "text": personaPrompt }]
-            });
-        }
-        
-        const MAX_HISTORY_MESSAGES = 10;
+        conversationHistoryForAPI.push({ "role": "system", "content": systemContent });
+
+        const MAX_HISTORY_MESSAGES = 6; // Jangan terlalu banyak agar tidak boros token
         const messagesToSend = currentChat && currentChat.messages ? currentChat.messages.slice(-MAX_HISTORY_MESSAGES) : [];
 
-        for (const msg of messagesToSend) {
-            const contentParts = [];
-            let processedText = msg.content; 
-            
-            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})(?:\S+)?/g;
-            const matches = [...(msg.content || '').matchAll(youtubeRegex)]; 
+        let isImagePresentInRequest = false;
 
-            if (matches.length > 0) {
-                for (const match of matches) {
-                    const videoId = match[1];
-                    const videoDetails = await getYouTubeVideoDetails(videoId); 
-                    if (videoDetails) {
-                        processedText = (processedText || '') + `\n\n[INFO VIDEO YOUTUBE: Judul: "${videoDetails.title}", Deskripsi: "${videoDetails.description ? videoDetails.description.substring(0, Math.min(videoDetails.description.length, 100)) + '...' : 'Tidak ada deskripsi.'}"]`;
-                    }
+        // Loop pesan untuk format Groq/OpenAI
+        for (const msg of messagesToSend) {
+            let role = msg.sender === 'user' ? 'user' : 'assistant';
+            let content = msg.content || "";
+
+            // Cek YouTube Links
+            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]{11})/g;
+            const matches = [...content.matchAll(youtubeRegex)];
+            for (const match of matches) {
+                const videoDetails = await getYouTubeVideoDetails(match[1]);
+                if (videoDetails) {
+                    content += `\n[Context: Video YouTube berjudul "${videoDetails.title}"]`;
                 }
             }
-            if (processedText) {
-                contentParts.push({ "text": processedText });
-            }
-            if (msg.fileObject) {
-                contentParts.push({
-                    "inline_data": {
-                        "mime_type": msg.fileObject.mimeType,
-                        "data": msg.fileObject.base64
-                    }
-                });
-            }
-            if (contentParts.length > 0) {
+
+            if (msg.fileObject && msg.fileObject.mimeType.startsWith('image/')) {
+                // Format Vision untuk Groq (Llama 3.2 Vision)
+                isImagePresentInRequest = true;
                 conversationHistoryForAPI.push({
-                    "role": msg.sender === 'user' ? "user" : "model",
-                    "parts": contentParts
+                    "role": role,
+                    "content": [
+                        { "type": "text", "text": content },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": `data:${msg.fileObject.mimeType};base64,${msg.fileObject.base64}`
+                            }
+                        }
+                    ]
+                });
+            } else {
+                // Format Teks Biasa
+                conversationHistoryForAPI.push({
+                    "role": role,
+                    "content": content
                 });
             }
         }
 
-        // --- 3. Panggil API AI ---
-        const aiRawResponse = await getAIResponse(conversationHistoryForAPI);
+        // 4. Kirim ke Groq
+        const aiRawResponse = await getAIResponse(conversationHistoryForAPI, isImagePresentInRequest);
 
-        // --- 4. Hapus pesan loading ---
-        if (chatBox.lastChild && chatBox.lastChild.querySelector('.chat-message') && chatBox.lastChild.querySelector('.chat-message').textContent === thinkingMessage) {
+        // 5. Hapus Loading
+        if (chatBox.lastChild && chatBox.lastChild.textContent.includes(thinkingMessage)) {
             chatBox.removeChild(chatBox.lastChild);
         }
         
-        if (userMessage.toLowerCase().includes('edit foto') || userMessage.toLowerCase().includes('ganti background')) {
-             const staticMessage = "Wah bestie, aku belum bisa bantu edit-edit foto gitu. Aku cuma bisa bantuin ngobrol, kasih info, atau analisis gambar/dokumen aja. Kalau mau edit foto, coba pake aplikasi editing foto khusus ya! 🙏";
-             const aiTimestamp = new Date().toISOString();
-             addMessageToData(staticMessage, 'bot', 'text', null, null, null, aiTimestamp);
-             addMessageToDOM(staticMessage, 'bot', 'text', null, null, null, aiTimestamp);
+        // Cek permintaan edit foto (tetap hardcoded karena LLM tidak bisa edit pixel)
+        if (userMessage.toLowerCase().includes('edit foto')) {
+             const staticMessage = "Sorry bestie, aku belum bisa edit pixel foto langsung. Cuma bisa analisis isinya aja!";
+             const t = new Date().toISOString();
+             addMessageToData(staticMessage, 'bot', 'text', null, null, null, t);
+             addMessageToDOM(staticMessage, 'bot', 'text', null, null, null, t);
              return; 
         }
 
-        // --- 5. Proses respons AI ---
+        // 6. Tampilkan Respon
         let finalAIMessage = aiRawResponse;
         let aiImageURL = null;
-        const imagePattern = /\[GAMBAR:\s*(https?:\/\/[^\s\]]+\.(?:png|jpe?g|gif|webp|svg))\]/i;
+        // Cek apakah ada pola gambar (jika Groq disuruh generate link placeholder)
+        const imagePattern = /\[GAMBAR:\s*(https?:\/\/[^\s\]]+)\]/i;
         const match = aiRawResponse.match(imagePattern);
-
         if (match && match[1]) {
             aiImageURL = match[1];
             finalAIMessage = aiRawResponse.replace(imagePattern, '').trim();
         }
         
-        // --- 6. Tambahkan respons AI ke data dan DOM dengan timestamp ---
         const aiTimestamp = new Date().toISOString();
         addMessageToData(finalAIMessage, 'bot', 'text', null, null, aiImageURL, aiTimestamp);
         addMessageToDOM(finalAIMessage, 'bot', 'text', null, null, aiImageURL, aiTimestamp);
@@ -424,29 +429,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') handleSend();
     });
     newChatBtn.addEventListener('click', startNewChat);
-    uploadDocBtn.addEventListener('click', () => docInput.click());
+    uploadDocBtn.addEventListener('click', () => docInput.click()); // Dokumen mungkin tidak terbaca oleh Llama Vision
     uploadImgBtn.addEventListener('click', () => imageInput.click());
     imageInput.addEventListener('change', handleFileSelect);
     docInput.addEventListener('change', handleFileSelect);
 
     clearHistoryBtn.addEventListener('click', () => {
-        if (confirm("Apakah anda yakin ingin menghapus pesan ini?!")) {
+        if (confirm("Yakin hapus riwayat?")) {
             chats = [];
             localStorage.removeItem('ai-chat-history');
             currentChatId = null;
             startNewChat();
-            console.log("Riwayat obrolan telah dihapus!");
         }
     });
 
     if(aiModelSelect) {
         aiModelSelect.addEventListener('change', (e) => {
             currentModel = e.target.value;
-            console.log(`Model AI diubah menjadi: ${currentModel}`);
         });
     }
 
-    // --- Inisialisasi Aplikasi ---
+    // --- Init ---
     loadChats();
     renderHistory();
     renderChatBox();
