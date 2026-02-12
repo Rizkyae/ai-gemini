@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
              const initialChatMessage = document.createElement('div');
              initialChatMessage.classList.add('chat-message', 'bot');
-             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski (via Groq AI). Mau ngobrol apa hari ini?</p>';
+             initialChatMessage.innerHTML = '<p>Halo! Saya Mas Riski. Mau ngobrol apa hari ini?</p>';
              initialMessageRow.appendChild(initialChatMessage);
              chatBox.appendChild(initialMessageRow);
         }
